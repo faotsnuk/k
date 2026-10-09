@@ -1,1 +1,2164 @@
-
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <!-- Запобігання автоінверсії кольорів мобільними браузерами в темній темі системи -->
+  <meta name="color-scheme" content="light">
+  <title>FAO & КНУ імені Тараса Шевченка — Новини та дослідження</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/960px-Flag_of_Ukraine.svg.png">
+  <!-- Захист від блокування YouTube плеєра -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <!-- Шрифт Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Іконки Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      color-scheme: light;            /* Суворий світлий режим для усунення перефарбування карток браузером */
+      --primary-red: #b80000;         /* Фірмовий червоний акцент */
+      --primary-red-hover: #900000;
+      --bg-light: #F4F6F9;            /* Світло-сірий фон для десктопу */
+      --bg-card: #FFFFFF;             /* Чистий білий для карток */
+      --border-color: #E2E8F0;        /* Рамки та розділювачі */
+      --text-main: #0F172A;           /* Базовий темний текст карток */
+      --text-title: #0B1F3A;          /* Темно-синій для заголовків новин */
+      --text-body: #44546A;           /* Середній сіро-синій для тексту ліду та дат */
+      --text-muted: #64748B;          /* Спокійний сірий */
+      --accent-blue: #1E3E62;         /* Темно-синій акцент */
+      --daisi-navy: #123B66;          /* Зовнішній синій фон мобільної версії */
+      --font-family: 'Montserrat', sans-serif;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      padding: 10px 14px 40px;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Індикатор прокрутки */
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-red), var(--accent-blue));
+      width: 0%;
+      z-index: 10000;
+      transition: width 0.1s ease;
+    }
+    /* Шапка сайту */
+    header {
+      padding: 18px 20px;
+      position: relative;
+      background: radial-gradient(circle at top, rgba(184, 0, 0, 0.12) 0%, transparent 60%), var(--daisi-navy);
+      border-bottom: 4px solid var(--primary-red);
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(18, 59, 102, 0.18);
+      margin-bottom: 16px;
+      width: 100%;
+    }
+    .header-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .header-branding {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1 1 450px;
+      max-width: 650px;
+      min-width: 0;
+    }
+    /* Рядок логотипа та заголовка */
+    .branding-header-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
+      width: 100%;
+    }
+    .daisi-header-logo {
+      width: clamp(52px, 12vw, 66px);
+      height: clamp(52px, 12vw, 66px);
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background-color: #FFFFFF;
+      display: block;
+    }
+    .logo-tsnuk-crop {
+      border-radius: 50% !important;
+      object-fit: cover !important;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      clip-path: circle(50% at 50% 50%);
+    }
+    .branding-titles {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+    }
+    h1 {
+      font-size: clamp(1.3rem, 4vw, 1.65rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
+      color: #FFFFFF;
+      line-height: 1.2;
+    }
+    .subtitle {
+      font-size: clamp(0.74rem, 2vw, 0.82rem);
+      color: #E2E8F0 !important;
+      margin: 0;
+      font-weight: 500;
+    }
+    /* Опис проєкту (#F4F7FB) */
+    .project-description {
+      font-size: clamp(0.74rem, 1.8vw, 0.8rem);
+      color: #F4F7FB !important;
+      line-height: 1.5;
+      margin: 0;
+      max-width: 580px;
+      opacity: 0.95;
+    }
+    /* Компактне пошукове поле */
+    .header-search {
+      flex: 0 0 auto;
+      width: clamp(260px, 26vw, 320px);
+      max-width: 100%;
+      margin-left: auto;
+    }
+    .search-container {
+      position: relative;
+      width: 100%;
+    }
+    .search-input {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 16px 8px 38px;
+      background-color: #FFFFFF !important;
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      color: #0B1F3A !important;
+      font-family: var(--font-family);
+      font-size: 0.8rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary-red);
+      box-shadow: 0 0 0 3px rgba(184, 0, 0, 0.12);
+    }
+    .search-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      width: 15px;
+      height: 15px;
+    }
+    /* Панель керування: Сортування та вибір місяця */
+    .controls-card {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 14px;
+      padding: 10px 16px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 15px rgba(11, 25, 44, 0.02);
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+    .controls-left-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .control-item-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .control-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #44546A !important;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .custom-select-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .custom-select {
+      appearance: none;
+      background-color: #FFFFFF !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 30px;
+      padding: 8px 34px 8px 16px;
+      min-height: 42px;
+      font-family: var(--font-family);
+      font-size: 0.8rem;
+      color: #0B1F3A !important;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+    .custom-select:focus {
+      border-color: var(--primary-red) !important;
+    }
+    .sort-icon {
+      position: absolute;
+      right: 12px;
+      color: var(--text-muted);
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0;
+      width: 100%;
+    }
+    /* КАРТКИ НОВИН У СВІТЛІЙ ТЕМІ (БІЛЕ ТЛО, ТЕМНО-СИНІЙ ТЕКСТ) */
+    .news-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+    .news-card {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      color: #0F172A !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      width: 100%;
+      min-height: 220px;
+      border-left: 5px solid var(--primary-red) !important;
+      box-shadow: 0 4px 15px rgba(11, 25, 44, 0.04);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      cursor: pointer;
+    }
+    .news-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(11, 25, 44, 0.1);
+      border-color: rgba(30, 62, 98, 0.25) !important;
+    }
+    /* Ліва колонка картки: Медіа (Десктоп) */
+    .news-card-media-wrap {
+      flex: 0 0 33%;
+      max-width: 360px;
+      min-width: 250px;
+      position: relative;
+      background-color: #F8FAFC !important;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .news-media-thumb-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .news-card-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .news-card:hover .news-card-thumb-img {
+      transform: scale(1.04);
+    }
+    .media-video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.32);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease;
+    }
+    .news-card:hover .media-video-overlay {
+      background-color: rgba(0, 0, 0, 0.48);
+    }
+    .media-play-pill {
+      width: 46px;
+      height: 46px;
+      background-color: var(--primary-red);
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(184, 0, 0, 0.45);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .news-card:hover .media-play-pill {
+      transform: scale(1.12);
+    }
+    .media-caption-badge {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      padding: 14px 12px 6px;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Права колонка картки: Заголовок + Лід */
+    .news-card-body-wrap {
+      flex: 1 1 auto;
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+    }
+    .news-card-meta-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 50px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background-color: rgba(184, 0, 0, 0.08) !important;
+      color: var(--primary-red) !important;
+    }
+    .news-card-meta-text {
+      font-size: 0.75rem;
+      color: #44546A !important;
+      font-weight: 500;
+    }
+    /* Темно-синій колір заголовків новин (#0B1F3A) */
+    .news-card-title,
+    .news-card h2 {
+      font-size: clamp(1.12rem, 3.2vw, 1.25rem);
+      font-weight: 800;
+      color: #0B1F3A !important;
+      line-height: 1.35;
+      margin-bottom: 8px;
+      transition: color 0.2s ease;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    .news-card:hover .news-card-title,
+    .news-card:hover h2 {
+      color: var(--primary-red) !important;
+    }
+    .news-card-divider {
+      width: 35px;
+      height: 3px;
+      background-color: var(--primary-red) !important;
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+    /* Сіро-синій текст ліду (#44546A), до 12 рядків */
+    .news-card-excerpt,
+    .news-card p {
+      font-size: clamp(0.85rem, 2.2vw, 0.9rem);
+      line-height: 1.65;
+      color: #44546A !important;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 12;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-grow: 1;
+      white-space: pre-line;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+    .news-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-color);
+      padding-top: 12px;
+      margin-top: auto;
+    }
+    .read-more-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: transparent;
+      border: none;
+      color: var(--primary-red) !important;
+      font-family: var(--font-family);
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: gap 0.2s ease, color 0.2s ease;
+      padding: 8px 0;
+      min-height: 44px;
+    }
+    .news-card:hover .read-more-btn {
+      gap: 9px;
+      color: var(--primary-red-hover) !important;
+    }
+    .read-more-btn i {
+      width: 15px;
+      height: 15px;
+    }
+    /* МОДАЛЬНЕ ВІКНО ПОВНОГО МАТЕРІАЛУ */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(18, 59, 102, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 10px;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: #FFFFFF !important;
+      border-radius: 18px;
+      width: min(95vw, 760px);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      transform: scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+    .modal-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border-color);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      z-index: 20;
+      touch-action: manipulation;
+    }
+    .modal-close-btn:hover {
+      background: var(--primary-red);
+      color: white;
+      border-color: var(--primary-red);
+    }
+    .modal-scrollable-content {
+      padding: 24px 22px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+      background-color: #FFFFFF !important;
+    }
+    /* Збереження вихідних пропорцій фото у модальному вікні */
+    .modal-news-img-wrap {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      background-color: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-news-img {
+      display: block;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      max-height: 520px;
+      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(11, 25, 44, 0.08);
+    }
+    .modal-title {
+      font-size: clamp(1.2rem, 3.8vw, 1.45rem);
+      font-weight: 800;
+      color: #0B1F3A !important;
+      line-height: 1.35;
+      margin-bottom: 14px;
+      padding-right: 30px;
+    }
+    /* СТИЛІЗАЦІЯ ПОВНОГО ТЕКСТУ */
+    .modal-paragraphs-block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .modal-paragraph {
+      font-size: clamp(0.9rem, 2.4vw, 0.95rem);
+      line-height: 1.75;
+      color: #1E293B !important;
+      white-space: pre-line;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      margin: 0 0 10px 0;
+    }
+    .modal-paragraph strong, 
+    .modal-question-para strong, 
+    .article-subheading strong, 
+    .article-list-item strong {
+      font-weight: 700 !important;
+      color: #0B1F3A !important;
+    }
+    .modal-paragraph em,
+    .modal-question-para em,
+    .article-byline-para em {
+      font-style: italic !important;
+    }
+    .modal-question-para {
+      margin-top: 16px;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+    .modal-question-para strong {
+      font-size: 1.02rem;
+    }
+    .article-byline-para {
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border-color);
+      font-size: 0.92rem;
+    }
+    .article-subheading {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0B1F3A !important;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+    .article-list-item {
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: #1E293B !important;
+      margin-bottom: 6px;
+      padding-left: 4px;
+    }
+    .news-inline-link {
+      color: var(--accent-blue);
+      text-decoration: underline;
+      font-weight: 600;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    .news-inline-link:hover {
+      color: var(--primary-red);
+    }
+    .iframe-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #000;
+    }
+    .iframe-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .generic-link-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--bg-light);
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+    .generic-link-preview:hover {
+      border-color: var(--accent-blue);
+      background-color: rgba(30, 62, 98, 0.04);
+    }
+    .link-icon-container {
+      width: 28px;
+      height: 28px;
+      background-color: rgba(30, 62, 98, 0.1);
+      color: var(--accent-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .link-details {
+      min-width: 0;
+    }
+    .link-title {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #0B1F3A !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .link-domain {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    /* Плаваюча панель */
+    .floating-controls-panel {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      visibility: hidden;
+    }
+    .floating-controls-panel.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    .floating-search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .floating-search-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+    .floating-search-input {
+      border: 1px solid var(--border-color);
+      background: var(--bg-light);
+      padding: 6px 14px 6px 36px;
+      border-radius: 30px;
+      font-family: var(--font-family);
+      font-size: 0.8rem;
+      color: #0B1F3A;
+      width: 180px;
+      min-height: 40px;
+      transition: all 0.3s ease;
+    }
+    .floating-search-input:focus {
+      outline: none;
+      border-color: var(--primary-red);
+      width: 220px;
+    }
+    .back-to-top {
+      background-color: var(--primary-red);
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(184, 0, 0, 0.2);
+      flex-shrink: 0;
+      touch-action: manipulation;
+    }
+    .back-to-top:hover {
+      background-color: var(--primary-red-hover);
+      transform: translateY(-2px);
+    }
+    .back-to-top i {
+      width: 16px;
+      height: 16px;
+    }
+    .loading-state, .error-state, .no-results {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(184, 0, 0, 0.1);
+      border-top-color: var(--primary-red);
+      border-radius: 50%;
+      animation: spin 0.8s infinite linear;
+      margin-bottom: 12px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loading-state p {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .error-icon {
+      width: 48px;
+      height: 48px;
+      color: var(--primary-red);
+      margin-bottom: 12px;
+    }
+    .error-state h3, .no-results h3 {
+      font-size: 1.25rem;
+      margin-bottom: 6px;
+    }
+    .error-state p, .no-results p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      max-width: 400px;
+      font-size: 0.85rem;
+    }
+    .retry-btn {
+      background-color: var(--primary-red);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      min-height: 44px;
+      border-radius: 30px;
+      font-family: var(--font-family);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      touch-action: manipulation;
+    }
+    .retry-btn:hover {
+      background-color: var(--primary-red-hover);
+    }
+    /* ПІДВАЛ ТА ПОКРАЩЕНИЙ БЛОК КОНТАКТІВ */
+    footer {
+      padding: 30px 10px 15px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 45px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+    .footer-top-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+    .footer-contact-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      text-align: left;
+      max-width: 800px;
+      width: 100%;
+    }
+    .contact-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0B1F3A;
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    .footer-funding-text {
+      font-size: clamp(0.76rem, 2vw, 0.82rem);
+      line-height: 1.6;
+      color: #44546A;
+      text-align: left;
+      margin: 2px 0 6px 0;
+    }
+    .contact-inline-link {
+      color: var(--accent-blue);
+      font-weight: 600;
+      text-decoration: underline;
+      transition: color 0.2s ease;
+    }
+    .contact-inline-link:hover {
+      color: var(--primary-red);
+    }
+    .contact-question {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 4px;
+    }
+    .contact-email {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary-red);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      display: inline-block;
+      padding: 2px 0;
+    }
+    .contact-email:hover {
+      color: var(--primary-red-hover);
+      text-decoration: underline;
+    }
+    /* Структуровані блоки посилань без дублювання іконок */
+    .footer-links-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .footer-link-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .footer-group-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0B1F3A;
+      min-width: 75px;
+    }
+    .footer-action-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      min-height: 36px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    }
+    .footer-action-chip:hover {
+      border-color: var(--primary-red);
+      color: var(--primary-red);
+      background: rgba(184, 0, 0, 0.04);
+      transform: translateY(-1px);
+    }
+    .footer-action-chip i {
+      width: 14px;
+      height: 14px;
+    }
+    .footer-copy {
+      font-size: 0.76rem;
+      color: #94A3B8;
+      text-align: left;
+      margin-top: 14px;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 12px;
+    }
+    /* ==============================================================
+       АДАПТИВНІ БРЕЙКПОІНТИ (1024px, 768px, 480px, 375px)
+       ============================================================== */
+    @media (max-width: 1024px) {
+      .header-container {
+        gap: 14px;
+      }
+      .news-card-media-wrap {
+        flex: 0 0 35%;
+        max-width: 320px;
+      }
+    }
+    /* Мобільні пристрої та планшети (<= 768px) */
+    @media (max-width: 768px) {
+      html, body {
+        background-color: var(--daisi-navy) !important;
+      }
+      body {
+        padding: 8px 10px 40px;
+      }
+      header {
+        padding: 16px 14px;
+        border-radius: 14px;
+        background: radial-gradient(circle at top, rgba(184, 0, 0, 0.14) 0%, transparent 60%), #123B66;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-bottom: 4px solid var(--primary-red);
+      }
+      .header-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .header-branding {
+        flex: 0 0 auto;
+        max-width: 100%;
+        width: 100%;
+      }
+      .header-search {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 320px;
+        margin-left: 0;
+        margin-top: 4px;
+      }
+      .controls-card {
+        padding: 10px 14px;
+        justify-content: flex-start;
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      }
+      .controls-left-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .control-item-wrapper {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .custom-select-wrapper {
+        flex: 1 1 auto;
+        max-width: 240px;
+        width: 100%;
+      }
+      .custom-select {
+        width: 100%;
+        min-height: 44px;
+        background-color: #FFFFFF !important;
+        color: #0B1F3A !important;
+      }
+      .news-card {
+        flex-direction: column;
+        min-height: auto;
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+      }
+      .news-card-media-wrap {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        height: auto;
+        background: #F8FAFC !important;
+        background-color: #F8FAFC !important;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .news-media-thumb-container {
+        width: 100%;
+        height: auto;
+        background-color: #F8FAFC !important;
+      }
+      .news-card-thumb-img {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        max-height: 380px;
+        object-fit: contain;
+      }
+      .news-card-media-wrap.has-video .news-media-thumb-container {
+        aspect-ratio: 16 / 9;
+      }
+      .news-card-media-wrap.has-video .news-card-thumb-img {
+        height: 100%;
+        object-fit: cover;
+      }
+      .news-card-body-wrap {
+        padding: 16px 16px 14px;
+        background: #FFFFFF !important;
+        background-color: #FFFFFF !important;
+      }
+      .news-card-title,
+      .news-card h2 {
+        color: #0B1F3A !important;
+      }
+      .news-card-excerpt,
+      .news-card p {
+        color: #44546A !important;
+      }
+      .news-card-meta-text {
+        color: #44546A !important;
+      }
+      .read-more-btn {
+        color: var(--primary-red) !important;
+      }
+      footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .contact-title {
+        color: #FFFFFF !important;
+      }
+      .footer-funding-text {
+        color: #E2E8F0 !important;
+      }
+      .contact-inline-link {
+        color: #FFFFFF !important;
+      }
+      .contact-question {
+        color: #FFFFFF !important;
+      }
+      .contact-email {
+        color: #FF6B6B !important;
+      }
+      .footer-group-label {
+        color: #FFFFFF !important;
+      }
+      .footer-action-chip {
+        background: rgba(255, 255, 255, 0.12);
+        color: #FFFFFF !important;
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+      .footer-action-chip:hover {
+        background: rgba(255, 255, 255, 0.22);
+        color: #FFFFFF !important;
+        border-color: #FFFFFF;
+      }
+      .footer-copy {
+        color: #CBD5E1 !important;
+        border-top: 1px dashed rgba(255, 255, 255, 0.2);
+      }
+      .loading-state p, .no-results p {
+        color: #E2E8F0;
+      }
+      .no-results h3 {
+        color: #FFFFFF;
+      }
+      /* Плаваюча панель на мобільному */
+      .floating-controls-panel {
+        bottom: 12px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        justify-content: space-between;
+        padding: 4px 8px;
+        border-radius: 35px;
+      }
+      .floating-search-box {
+        flex: 1;
+      }
+      .floating-search-input {
+        width: 100%;
+      }
+      .floating-search-input:focus {
+        width: 100%;
+      }
+      /* Модальне вікно */
+      .modal-card {
+        width: 96vw;
+        max-height: 94vh;
+        border-radius: 14px;
+      }
+      .modal-scrollable-content {
+        padding: 18px 14px 20px;
+      }
+      .modal-news-img {
+        max-height: 45vh;
+      }
+    }
+    /* Компактні телефони (<= 480px) */
+    @media (max-width: 480px) {
+      body {
+        padding: 6px 8px 50px;
+      }
+      header {
+        padding: 14px 12px;
+      }
+      .branding-header-row {
+        gap: 10px;
+      }
+      .daisi-header-logo {
+        width: 48px;
+        height: 48px;
+      }
+      .header-search {
+        max-width: 100%;
+      }
+      .control-item-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+      .custom-select-wrapper {
+        max-width: 100%;
+      }
+      .news-card-body-wrap {
+        padding: 14px 12px 12px;
+      }
+      .news-card-excerpt {
+        margin-bottom: 12px;
+      }
+      .footer-contact-block {
+        gap: 4px;
+      }
+      .footer-copy {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Прогрес скролу -->
+  <div id="progress-bar"></div>
+  <!-- Шапка сайту -->
+  <header>
+    <div class="header-container">
+      <div class="header-branding">
+        <div class="branding-header-row">
+          <img 
+            src="https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/FAO_logo.svg/3840px-FAO_logo.svg.png?utm_source=uk.wikipedia.org&utm_campaign=index&utm_content=thumbnail" 
+            alt="FAO Logo" 
+            class="daisi-header-logo"
+            referrerpolicy="no-referrer"
+            decoding="async"
+            style="object-fit: contain; padding: 3px;"
+          >
+          <img 
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgjEQQ3vzGutwq4JX7hgVMt81j0-gDeM_tH_hG3xxvYP3zXAxQIjr88GQ&s=10" 
+            alt="КНУ імені Тараса Шевченка Logo" 
+            class="daisi-header-logo logo-tsnuk-crop"
+            referrerpolicy="no-referrer"
+            decoding="async"
+          >
+          <div class="branding-titles">
+            <h1>FAO & КНУ імені Тараса Шевченка</h1>
+            <p class="subtitle">Спільні ініціативи, дослідження та новини партнерства</p>
+          </div>
+        </div>
+        <p class="project-description">
+          Співпраця Продовольчої та сільськогосподарської організації ООН (FAO) та Київського національного університету імені Тараса Шевченка спрямована на реалізацію спільних дослідницьких, освітніх та експертних ініціатив у сфері продовольчої безпеки, сталого розвитку агросектору, кліматичної стійкості та відновлення України.
+        </p>
+      </div>
+      <!-- Пошук (компактний та пропорційний) -->
+      <div class="header-search">
+        <div class="search-container">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="mainSearchInput" class="search-input" placeholder="Шукати в новинах, тексті або анонсах...">
+        </div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <!-- Панель керування: Сортування та Вибір місяця (вирівняно ліворуч) -->
+    <div class="controls-card">
+      <div class="controls-left-group">
+        <div class="control-item-wrapper">
+          <span class="control-label" for="sortSelect">Сортувати:</span>
+          <div class="custom-select-wrapper">
+            <select id="sortSelect" class="custom-select">
+              <option value="date-desc" selected>Найновіші</option>
+              <option value="date-asc">Найстаріші</option>
+              <option value="id-desc">За номером (№ ↓)</option>
+              <option value="id-asc">За номером (№ ↑)</option>
+            </select>
+            <i data-lucide="chevron-down" class="sort-icon"></i>
+          </div>
+        </div>
+        <div class="control-item-wrapper">
+          <span class="control-label" for="monthSelect">Місяць:</span>
+          <div class="custom-select-wrapper">
+            <select id="monthSelect" class="custom-select">
+              <option value="all" selected>Усі місяці</option>
+            </select>
+            <i data-lucide="chevron-down" class="sort-icon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Завантаження -->
+    <div id="loadingState" class="loading-state">
+      <div class="spinner"></div>
+      <p>Оновлення стрічки новин із таблиці проєкту...</p>
+    </div>
+    <!-- Помилка зв'язку -->
+    <div id="errorState" class="error-state" style="display: none;">
+      <i data-lucide="alert-triangle" class="error-icon"></i>
+      <h3>Збій синхронізації з таблицею</h3>
+      <p>Не вдалося завантажити дані з Google Sheets. Перевірте доступ або оновіть сторінку.</p>
+      <button class="retry-btn" id="retryFetchBtn">Оновити сторінку</button>
+    </div>
+    <!-- Вертикальна одноколонкова стрічка новин -->
+    <div class="news-feed" id="newsGrid"></div>
+  </main>
+  <!-- Плаваюча панель швидкого пошуку і повернення нагору -->
+  <div class="floating-controls-panel" id="floatingControls">
+    <div class="floating-search-box">
+      <i data-lucide="search" class="floating-search-icon"></i>
+      <input type="text" id="floatingSearchInput" class="floating-search-input" placeholder="Пошук новини...">
+    </div>
+    <button class="back-to-top" id="backToTopBtn" title="Вгору">
+      <i data-lucide="arrow-up"></i>
+    </button>
+  </div>
+  <!-- Модальне вікно для читання повного матеріалу -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="modalCloseBtn" title="Закрити">
+        <i data-lucide="x"></i>
+      </button>
+      <div class="modal-scrollable-content" id="modalTarget">
+        <!-- Тільки повний текст новини завантажується сюди -->
+      </div>
+    </div>
+  </div>
+  <!-- Підвал: інформативний структурований блок контактів -->
+  <footer>
+    <div class="footer-top-row">
+      <div class="footer-contact-block">
+        <h3 class="contact-title">FAO & КНУ імені Тараса Шевченка</h3>
+        <p class="footer-funding-text">
+          Партнерська ініціатива <a href="https://www.fao.org/home/en/" target="_blank" rel="noopener noreferrer" class="contact-inline-link">Продовольчої та сільськогосподарської організації ООН (FAO)</a> та <a href="https://knu.ua/" target="_blank" rel="noopener noreferrer" class="contact-inline-link">Київського національного університету імені Тараса Шевченка</a> для координації науково-дослідних проєктів, освітніх програм, експертної аналітики та сталого розвитку.
+        </p>
+        <p class="contact-question">Маєте питання чи пропозиції? Напишіть нам!</p>
+        <a href="mailto:info@knu.ua" class="contact-email">info@knu.ua</a>
+        <!-- Структуровані контакти та ресурси організацій -->
+        <div class="footer-links-grid">
+          <div class="footer-link-group">
+            <span class="footer-group-label">FAO:</span>
+            <a href="https://www.fao.org/home/en/" target="_blank" rel="noopener noreferrer" class="footer-action-chip" title="Офіційний сайт FAO">
+              <i data-lucide="globe"></i> fao.org
+            </a>
+            <a href="https://www.facebook.com/FAOUkraine" target="_blank" rel="noopener noreferrer" class="footer-action-chip" title="Facebook FAO Ukraine">
+              <i data-lucide="facebook"></i> Facebook
+            </a>
+          </div>
+          <div class="footer-link-group">
+            <span class="footer-group-label">КНУ:</span>
+            <a href="https://knu.ua/" target="_blank" rel="noopener noreferrer" class="footer-action-chip" title="Офіційний вебпортал КНУ імені Тараса Шевченка">
+              <i data-lucide="globe"></i> knu.ua
+            </a>
+            <a href="https://www.facebook.com/kyiv.university/" target="_blank" rel="noopener noreferrer" class="footer-action-chip" title="Офіційна сторінка КНУ у Facebook">
+              <i data-lucide="facebook"></i> Facebook
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Оновлений копірайт -->
+    <div class="footer-copy">
+      &copy; 2026 FAO & КНУ імені Тараса Шевченка
+    </div>
+  </footer>
+  <script>
+    // ID Google Таблиці
+    const SHEET_ID = '1du7HmFj3mOgRtl_je6jQ-404-Xc11Sa7ddyvWFVWLZU';
+    const GID = '0';
+    const JSON_FETCH_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${GID}`;
+    const HTML_FETCH_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:html&gid=${GID}`;
+    // Стан застосунку: сортування від найновіших за замовчуванням
+    let allNewsItems = [];
+    let searchTerm = '';
+    let sortKey = 'date-desc';
+    let selectedMonth = 'all';
+    // DOM елементи
+    const mainSearchInput = document.getElementById('mainSearchInput');
+    const floatingSearchInput = document.getElementById('floatingSearchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const newsGrid = document.getElementById('newsGrid');
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    const floatingControls = document.getElementById('floatingControls');
+    const retryFetchBtn = document.getElementById('retryFetchBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const modalTarget = document.getElementById('modalTarget');
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchSheetData();
+      initUIListeners();
+      lucide.createIcons();
+    });
+    /**
+     * Покроковий парсер кожного Rich Text фрагмента (Run) із таблиці з підтримкою комбінованих стилів
+     */
+    function parseCellToRichHtml(cellElement, cssStyleMap) {
+      if (!cellElement) return '';
+      let result = '';
+      function walk(node, inheritedBold = false, inheritedItalic = false) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent;
+          if (!text) return;
+          let formatted = escapeHtml(text);
+          if (inheritedBold && inheritedItalic) {
+            formatted = `<strong><em>${formatted}</em></strong>`;
+          } else if (inheritedBold) {
+            formatted = `<strong>${formatted}</strong>`;
+          } else if (inheritedItalic) {
+            formatted = `<em>${formatted}</em>`;
+          }
+          result += formatted;
+          return;
+        }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'br') {
+            result += '\n';
+            return;
+          }
+          let isBold = inheritedBold;
+          let isItalic = inheritedItalic;
+          if (tag === 'b' || tag === 'strong') isBold = true;
+          if (tag === 'i' || tag === 'em') isItalic = true;
+          const inlineStyle = (node.getAttribute('style') || '').toLowerCase();
+          if (/font-weight\s*:\s*(bold|[789]00)/.test(inlineStyle)) isBold = true;
+          if (/font-style\s*:\s*italic/.test(inlineStyle)) isItalic = true;
+          const classList = node.classList || [];
+          classList.forEach(cls => {
+            if (cssStyleMap && cssStyleMap[cls]) {
+              if (cssStyleMap[cls].isBold) isBold = true;
+              if (cssStyleMap[cls].isItalic) isItalic = true;
+            }
+          });
+          node.childNodes.forEach(child => {
+            walk(child, isBold, isItalic);
+          });
+          if (tag === 'div' || tag === 'p') {
+            result += '\n';
+          }
+        }
+      }
+      walk(cellElement, false, false);
+      return result;
+    }
+    /**
+     * Отримання медіа та вихідного Rich Text форматування з HTML-представлення Google Таблиці
+     */
+    async function fetchSheetHtmlAssets() {
+      try {
+        const res = await fetch(HTML_FETCH_URL);
+        if (!res.ok) return { images: {}, richTexts: {} };
+        const htmlText = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+        const table = doc.querySelector('table');
+        if (!table) return { images: {}, richTexts: {} };
+        const cssStyleMap = {};
+        doc.querySelectorAll('style').forEach(st => {
+          const css = st.textContent || '';
+          const ruleRegex = /\.([a-zA-Z0-9_-]+)\s*\{([^}]+)\}/g;
+          let m;
+          while ((m = ruleRegex.exec(css)) !== null) {
+            const cls = m[1];
+            const rules = m[2].toLowerCase();
+            const isBold = /font-weight\s*:\s*(bold|[789]00)/.test(rules);
+            const isItalic = /font-style\s*:\s*italic/.test(rules);
+            cssStyleMap[cls] = { isBold, isItalic };
+          }
+        });
+        const rows = Array.from(table.querySelectorAll('tr'));
+        let imgColIdx = 6;
+        let fullTextColIdx = 5;
+        let headerRowFound = -1;
+        for (let r = 0; r < Math.min(5, rows.length); r++) {
+          const cells = Array.from(rows[r].querySelectorAll('th, td')).map(c => c.innerText.trim().toLowerCase());
+          const fImgIdx = cells.findIndex(t => t.includes('зображення') || t.includes('фото') || t.includes('image'));
+          if (fImgIdx !== -1) imgColIdx = fImgIdx;
+          const fTextIdx = cells.findIndex(t => t.includes('повний текст') || (t.includes('текст') && !t.includes('короткий')));
+          if (fTextIdx !== -1) fullTextColIdx = fTextIdx;
+          if (fImgIdx !== -1 || fTextIdx !== -1) {
+            headerRowFound = r;
+            break;
+          }
+        }
+        const startRow = headerRowFound !== -1 ? headerRowFound + 1 : 1;
+        const images = {};
+        const richTexts = {};
+        for (let r = startRow; r < rows.length; r++) {
+          const cells = rows[r].querySelectorAll('td');
+          const offset = r - startRow;
+          if (cells.length > imgColIdx) {
+            const imgTag = cells[imgColIdx].querySelector('img');
+            if (imgTag && imgTag.src) {
+              images[offset] = imgTag.src;
+            }
+          }
+          if (cells.length > fullTextColIdx) {
+            const textCell = cells[fullTextColIdx];
+            const parsedRichHtml = parseCellToRichHtml(textCell, cssStyleMap);
+            if (parsedRichHtml) {
+              richTexts[offset] = parsedRichHtml;
+            }
+          }
+        }
+        return { images, richTexts };
+      } catch (e) {
+        console.warn("Не вдалося завантажити HTML-ассети:", e);
+        return { images: {}, richTexts: {} };
+      }
+    }
+    /**
+     * Головне завантаження даних
+     */
+    async function fetchSheetData() {
+      showLoading(true);
+      try {
+        const [jsonRes, htmlAssets] = await Promise.all([
+          fetch(JSON_FETCH_URL).then(r => {
+            if (!r.ok) throw new Error("Помилка мережі Google Sheets");
+            return r.text();
+          }),
+          fetchSheetHtmlAssets()
+        ]);
+        const rawData = jsonRes.substring(jsonRes.indexOf('({') + 1, jsonRes.lastIndexOf('})') + 1);
+        const parsedJson = JSON.parse(rawData);
+        if (!parsedJson.table || !parsedJson.table.rows) {
+          throw new Error("Некоректна відповідь Google Sheets");
+        }
+        processTableData(parsedJson.table, htmlAssets);
+        showLoading(false);
+        updateAppUI();
+      } catch (err) {
+        console.error(err);
+        showLoading(false);
+        showError(true);
+      }
+    }
+    function convertToUkr(day, month, year) {
+      const ukrMonths = [
+        "січня", "лютого", "березня", "квітня", "травня", "червня",
+        "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"
+      ];
+      if (month >= 1 && month <= 12) {
+        return `${day} ${ukrMonths[month - 1]} ${year}`;
+      }
+      return `${day}.${month}.${year}`;
+    }
+    function formatDateToUkrainian(dateStr) {
+      if (!dateStr || dateStr === "—" || dateStr.trim() === "") return "—";
+      let cleanStr = String(dateStr).trim();
+      if (cleanStr.startsWith("Date(") && cleanStr.endsWith(")")) {
+        try {
+          const parts = cleanStr.slice(5, -1).split(',');
+          const year = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) + 1;
+          const day = parseInt(parts[2], 10);
+          return convertToUkr(day, month, year);
+        } catch (e) {}
+      }
+      const dmyRegex = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})$/;
+      const matchDmy = cleanStr.match(dmyRegex);
+      if (matchDmy) {
+        let day = parseInt(matchDmy[1], 10);
+        let month = parseInt(matchDmy[2], 10);
+        let year = parseInt(matchDmy[3], 10);
+        if (year < 100) year += 2000;
+        return convertToUkr(day, month, year);
+      }
+      const ymdRegex = /^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/;
+      const matchYmd = cleanStr.match(ymdRegex);
+      if (matchYmd) {
+        let year = parseInt(matchYmd[1], 10);
+        let month = parseInt(matchYmd[2], 10);
+        let day = parseInt(matchYmd[3], 10);
+        return convertToUkr(day, month, year);
+      }
+      return dateStr;
+    }
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+    function parseDateString(dateStr) {
+      if (!dateStr || dateStr === "—") return new Date(0);
+      let cleanStr = String(dateStr).trim();
+      if (cleanStr.startsWith("Date(") && cleanStr.endsWith(")")) {
+        try {
+          const parts = cleanStr.slice(5, -1).split(',');
+          return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10), parseInt(parts[2], 10));
+        } catch (e) {}
+      }
+      const ukrMonths = [
+        "січня", "лютого", "березня", "квітня", "травня", "червня",
+        "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"
+      ];
+      const parts = cleanStr.split(' ');
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const monthStr = parts[1].toLowerCase();
+        const year = parseInt(parts[2], 10);
+        const monthIndex = ukrMonths.indexOf(monthStr);
+        if (monthIndex !== -1 && !isNaN(day) && !isNaN(year)) {
+          return new Date(year, monthIndex, day);
+        }
+      }
+      const partsDot = cleanStr.split('.');
+      if (partsDot.length === 3) {
+        const day = parseInt(partsDot[0], 10);
+        const month = parseInt(partsDot[1], 10) - 1;
+        const year = parseInt(partsDot[2], 10);
+        return new Date(year, month, day);
+      }
+      const partsDash = cleanStr.split('-');
+      if (partsDash.length === 3 && partsDash[0].length === 4) {
+        return new Date(parseInt(partsDash[0], 10), parseInt(partsDash[1], 10) - 1, parseInt(partsDash[2], 10));
+      }
+      const parsed = new Date(cleanStr);
+      return isNaN(parsed.getTime()) ? new Date(0) : parsed;
+    }
+    function updateMonthDropdown(items) {
+      if (!monthSelect) return;
+      const monthMap = new Map();
+      items.forEach(item => {
+        if (item.monthKey && item.monthLabel && !monthMap.has(item.monthKey)) {
+          monthMap.set(item.monthKey, item.monthLabel);
+        }
+      });
+      const sortedMonthKeys = Array.from(monthMap.keys()).sort().reverse();
+      let optionsHtml = '<option value="all">Усі місяці</option>';
+      sortedMonthKeys.forEach(key => {
+        const label = monthMap.get(key);
+        const isSelected = key === selectedMonth ? 'selected' : '';
+        optionsHtml += `<option value="${key}" ${isSelected}>${label}</option>`;
+      });
+      monthSelect.innerHTML = optionsHtml;
+      if (selectedMonth && (sortedMonthKeys.includes(selectedMonth) || selectedMonth === 'all')) {
+        monthSelect.value = selectedMonth;
+      } else {
+        monthSelect.value = 'all';
+        selectedMonth = 'all';
+      }
+    }
+    function processInlineFormatting(text) {
+      if (!text) return '';
+      const tokens = [];
+      let tokenized = text.replace(/<\/?(strong|b|em|i|u|a)(\s+[^>]*)?>/gi, (match) => {
+        let norm = match;
+        const lower = match.toLowerCase();
+        if (lower.startsWith('<b ') || lower === '<b>') norm = '<strong>';
+        else if (lower === '</b>') norm = '</strong>';
+        else if (lower.startsWith('<i ') || lower === '<i>') norm = '<em>';
+        else if (lower === '</i>') norm = '</em>';
+        const key = `___TOKEN_${tokens.length}___`;
+        tokens.push(norm);
+        return key;
+      });
+      tokenized = tokenized
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      tokenized = tokenized.replace(/(https?:\/\/[^\s<]+[^\s<.,!?:;)"'])/g, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="news-inline-link">${url}</a>`;
+      });
+      tokens.forEach((tag, idx) => {
+        tokenized = tokenized.replace(`___TOKEN_${idx}___`, tag);
+      });
+      return tokenized;
+    }
+    function formatFullArticleText(rawText) {
+      if (!rawText) return '';
+      let clean = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+      clean = clean.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+      clean = clean.replace(/\*\*\_([^_]+)\_\*\*/g, '<strong><em>$1</em></strong>');
+      clean = clean.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      clean = clean.replace(/<b>(.*?)<\/b>/gi, '<strong>$1</strong>');
+      const lines = clean.split('\n');
+      let html = '';
+      lines.forEach(line => {
+        let trimmed = line.trim();
+        if (!trimmed) return;
+        const isBullet = /^[🔹🔷•\-\*▪️]\s*(.+)/.test(trimmed);
+        if (isBullet) {
+          const formattedLine = processInlineFormatting(trimmed);
+          html += `<div class="article-list-item">${formattedLine}</div>`;
+          return;
+        }
+        const isAuthorByline = /^підготував|^підготувала|^автор|^фото/i.test(trimmed) && trimmed.length < 130;
+        if (isAuthorByline) {
+          let bylineFormatted = processInlineFormatting(trimmed);
+          bylineFormatted = bylineFormatted.replace(/<\/?(strong|b|em|i)>/gi, '');
+          html += `<p class="modal-paragraph article-byline-para"><strong><em>${bylineFormatted}</em></strong></p>`;
+          return;
+        }
+        const isDashQuestion = /^[–—\-]\s*.+[\?:]$/i.test(trimmed);
+        const endsWithQuestion = trimmed.endsWith('?') && trimmed.length < 320;
+        const isImperativeQuestion = /^(розкажіть|поясніть|опишіть|поділіться)\b/i.test(trimmed) && trimmed.length < 250;
+        const isInterviewerPrompt = /^(пані|пане)\s+[а-яіїєґa-z]+,\s+розкажіть/i.test(trimmed) && trimmed.length < 300;
+        const isShortHeadingColon = trimmed.length < 110 && trimmed.endsWith(':') && !trimmed.includes('<br>');
+        let formattedLine = processInlineFormatting(trimmed);
+        if (isDashQuestion || endsWithQuestion || isImperativeQuestion || isInterviewerPrompt || isShortHeadingColon) {
+          if (!formattedLine.startsWith('<strong>') && !formattedLine.startsWith('<h4')) {
+            formattedLine = `<strong>${formattedLine}</strong>`;
+          }
+          html += `<p class="modal-paragraph modal-question-para">${formattedLine}</p>`;
+          return;
+        }
+        html += `<p class="modal-paragraph">${formattedLine}</p>`;
+      });
+      return html;
+    }
+    function extractImageUrl(rawImage) {
+      if (!rawImage || typeof rawImage !== 'string') return '';
+      let str = rawImage.trim();
+      const formulaMatch = str.match(/=IMAGE\s*\(\s*["']([^"']+)["']/i);
+      if (formulaMatch) {
+        str = formulaMatch[1];
+      }
+      const urlMatch = str.match(/(https?:\/\/[^\s"'<>]+)/);
+      if (urlMatch) {
+        str = urlMatch[1];
+      }
+      if (str.includes('drive.google.com')) {
+        const fileIdMatch = str.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        if (fileIdMatch && fileIdMatch[1]) {
+          return `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1200`;
+        }
+      }
+      if (str.startsWith('http://') && (str.includes('google') || str.includes('ibb.co') || str.includes('imgur') || str.includes('knu.ua'))) {
+        str = str.replace('http://', 'https://');
+      }
+      return str.startsWith('http') ? str : '';
+    }
+    function extractUrlAndTitle(rawLink) {
+      let url = "";
+      let mediaTitle = "";
+      if (!rawLink || typeof rawLink !== 'string') return { url, mediaTitle };
+      const cleanLink = rawLink.trim();
+      const urlMatch = cleanLink.match(/(https?:\/\/[^\s]+)/);
+      if (urlMatch) {
+        url = urlMatch[1];
+        let openCount = (url.match(/\(/g) || []).length;
+        let closeCount = (url.match(/\)/g) || []).length;
+        while (closeCount > openCount && url.endsWith(')')) {
+          url = url.slice(0, -1);
+          closeCount--;
+        }
+        const remnant = cleanLink.replace(url, '').trim();
+        if (remnant) {
+          const titleMatch = remnant.match(/^\(([^)]+)\)$/) || remnant.match(/\(([^)]+)\)/);
+          mediaTitle = titleMatch ? titleMatch[1] : remnant;
+        }
+      } else if (cleanLink.startsWith('http://') || cleanLink.startsWith('https://')) {
+        url = cleanLink;
+      }
+      if (url && !mediaTitle) {
+        try {
+          mediaTitle = new URL(url).hostname.replace('www.', '');
+        } catch (e) {
+          mediaTitle = "Джерело";
+        }
+      }
+      return { url, mediaTitle };
+    }
+    /**
+     * Повна ізоляція: Лід (lead) та Повний текст (fullText) суворо розділені
+     */
+    function processTableData(jsonTable, htmlAssets = { images: {}, richTexts: {} }) {
+      const rows = jsonTable.rows || [];
+      if (rows.length === 0) return;
+      const cols = jsonTable.cols || [];
+      const colLabels = cols.map(c => c && c.label ? String(c.label).trim() : "");
+      const colsHaveHeaders = colLabels.some(l => {
+        const s = l.toLowerCase();
+        return s.includes('заголовок') || s.includes('лід') || s.includes('повний текст') || s.includes('зображення');
+      });
+      let headerSource = colLabels;
+      let dataRowsStartIndex = 0;
+      if (!colsHaveHeaders) {
+        for (let r = 0; r < Math.min(6, rows.length); r++) {
+          const row = rows[r];
+          if (!row || !row.c) continue;
+          const rowTexts = row.c.map(cell => cell && cell.v !== null && cell.v !== undefined ? String(cell.v).trim().toLowerCase() : '');
+          if (rowTexts.some(t => t.includes('заголовок') || t.includes('лід') || t.includes('повний текст') || t.includes('зображення'))) {
+            headerSource = row.c.map(cell => cell && cell.v !== null && cell.v !== undefined ? String(cell.v).trim() : '');
+            dataRowsStartIndex = r + 1;
+            break;
+          }
+        }
+      }
+      let idxId = -1;
+      let idxDate = -1;
+      let idxTitle = -1;
+      let idxLead = -1;
+      let idxFullText = -1;
+      let idxImage = -1;
+      let idxLink = -1;
+      headerSource.forEach((h, index) => {
+        const hLower = h.toLowerCase().trim();
+        if (hLower.includes('№') || hLower.includes('id') || hLower === 'n') {
+          idxId = index;
+        } else if (hLower.includes('внесено') || hLower.includes('дата') || hLower.includes('date')) {
+          idxDate = index;
+        } else if (hLower.includes('заголовок') || hLower.includes('title') || hLower === 'назва') {
+          idxTitle = index;
+        } else if (hLower === 'лід' || hLower.includes('lead') || hLower.includes('короткий опис') || hLower.includes('анонс')) {
+          idxLead = index;
+        } else if (hLower.includes('повний текст') || (hLower.includes('текст новини') && !hLower.includes('короткий'))) {
+          idxFullText = index;
+        } else if (hLower.includes('зображення') || hLower.includes('фото') || hLower.includes('image')) {
+          idxImage = index;
+        } else if (hLower.includes('посилання') || hLower.includes('link') || hLower.includes('url')) {
+          idxLink = index;
+        }
+      });
+      if (idxId === -1) idxId = 1;
+      if (idxDate === -1) idxDate = 2;
+      if (idxTitle === -1) idxTitle = 3;
+      if (idxLead === -1) idxLead = 4;
+      if (idxFullText === -1) idxFullText = 5;
+      if (idxImage === -1) idxImage = 6;
+      if (idxLink === -1) idxLink = 7;
+      allNewsItems = [];
+      const ukrNominativeMonths = [
+        "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+        "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
+      ];
+      for (let i = dataRowsStartIndex; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r || !r.c) continue;
+        const getVal = (idx) => {
+          if (idx < 0 || idx >= r.c.length) return "";
+          const cell = r.c[idx];
+          if (!cell) return "";
+          if (cell.v !== null && cell.v !== undefined && String(cell.v).trim() !== "") {
+            return String(cell.v).trim();
+          }
+          if (cell.f !== null && cell.f !== undefined) {
+            return String(cell.f).trim();
+          }
+          return "";
+        };
+        const id = getVal(idxId);
+        const rawDate = getVal(idxDate);
+        const date = formatDateToUkrainian(rawDate);
+        const rawTitle = getVal(idxTitle);
+        const rawLead = getVal(idxLead);
+        const rawImage = getVal(idxImage);
+        const rawLink = getVal(idxLink);
+        const dataRowOffset = i - dataRowsStartIndex;
+        const rawFullText = (htmlAssets.richTexts && htmlAssets.richTexts[dataRowOffset]) 
+          ? htmlAssets.richTexts[dataRowOffset] 
+          : getVal(idxFullText);
+        if (!rawTitle && !rawLead && !rawFullText && !rawImage && !rawLink && !id) continue;
+        const title = rawTitle || "Новина проєкту";
+        const lead = rawLead; 
+        const fullText = rawFullText;
+        let imageUrl = extractImageUrl(rawImage);
+        if (!imageUrl && htmlAssets.images && htmlAssets.images[dataRowOffset]) {
+          imageUrl = extractImageUrl(htmlAssets.images[dataRowOffset]);
+        }
+        const { url, mediaTitle } = extractUrlAndTitle(rawLink);
+        let youtubeId = "";
+        if (url && (url.includes("youtube.com") || url.includes("youtu.be"))) {
+          const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\s]{11})/;
+          const match = url.match(ytRegex);
+          if (match) youtubeId = match[1];
+        }
+        const dateObj = parseDateString(rawDate || date);
+        let monthKey = "";
+        let monthLabel = "";
+        if (dateObj.getTime() > 0) {
+          const y = dateObj.getFullYear();
+          const m = dateObj.getMonth();
+          monthKey = `${y}-${String(m + 1).padStart(2, '0')}`;
+          monthLabel = `${ukrNominativeMonths[m]} ${y}`;
+        }
+        allNewsItems.push({
+          id: id || String(allNewsItems.length + 1),
+          sheetRow: i + 1,
+          date: date || "—",
+          rawDate: rawDate,
+          dateObj: dateObj,
+          monthKey: monthKey,
+          monthLabel: monthLabel,
+          title: title,
+          lead: lead,
+          fullText: fullText,
+          imageUrl: imageUrl,
+          rawLink: rawLink,
+          url: url,
+          mediaTitle: mediaTitle,
+          youtubeId: youtubeId
+        });
+      }
+      updateMonthDropdown(allNewsItems);
+    }
+    function showLoading(active) {
+      loadingState.style.display = active ? 'flex' : 'none';
+      if (active) {
+        newsGrid.innerHTML = '';
+        errorState.style.display = 'none';
+      }
+    }
+    function showError(active) {
+      errorState.style.display = active ? 'flex' : 'none';
+    }
+    function initUIListeners() {
+      mainSearchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value;
+        floatingSearchInput.value = searchTerm;
+        updateAppUI();
+      });
+      floatingSearchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value;
+        mainSearchInput.value = searchTerm;
+        updateAppUI();
+      });
+      sortSelect.addEventListener('change', (e) => {
+        sortKey = e.target.value;
+        updateAppUI();
+      });
+      monthSelect.addEventListener('change', (e) => {
+        selectedMonth = e.target.value;
+        updateAppUI();
+      });
+      retryFetchBtn.addEventListener('click', () => {
+        location.reload();
+      });
+      window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById('progress-bar').style.width = scrolled + '%';
+        if (winScroll > 250) {
+          floatingControls.classList.add('visible');
+        } else {
+          floatingControls.classList.remove('visible');
+        }
+      });
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      modalCloseBtn.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+    }
+    /**
+     * Сортування від найновіших до найстаріших та фільтр за місяцем
+     */
+    function getProcessedDataset() {
+      let data = [...allNewsItems];
+      // Текстовий пошук
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        data = data.filter(item => {
+          return item.title.toLowerCase().includes(term) ||
+            item.lead.toLowerCase().includes(term) ||
+            item.fullText.toLowerCase().includes(term) ||
+            item.date.toLowerCase().includes(term) ||
+            item.mediaTitle.toLowerCase().includes(term);
+        });
+      }
+      // Ізоляція за місяцем
+      if (selectedMonth && selectedMonth !== 'all') {
+        data = data.filter(item => item.monthKey === selectedMonth);
+      }
+      // Сортування (date-desc: найновіші спочатку)
+      if (sortKey === 'date-desc') {
+        data.sort((a, b) => {
+          const timeA = a.dateObj ? a.dateObj.getTime() : 0;
+          const timeB = b.dateObj ? b.dateObj.getTime() : 0;
+          if (timeB !== timeA) return timeB - timeA;
+          const numA = parseInt(a.id, 10);
+          const numB = parseInt(b.id, 10);
+          if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+          return b.sheetRow - a.sheetRow;
+        });
+      } else if (sortKey === 'date-asc') {
+        data.sort((a, b) => {
+          const timeA = a.dateObj ? a.dateObj.getTime() : 0;
+          const timeB = b.dateObj ? b.dateObj.getTime() : 0;
+          if (timeA !== timeB) return timeA - timeB;
+          const numA = parseInt(a.id, 10);
+          const numB = parseInt(b.id, 10);
+          if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+          return a.sheetRow - b.sheetRow;
+        });
+      } else if (sortKey === 'id-desc') {
+        data.sort((a, b) => {
+          const numA = parseInt(a.id, 10);
+          const numB = parseInt(b.id, 10);
+          if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+          return b.sheetRow - a.sheetRow;
+        });
+      } else if (sortKey === 'id-asc') {
+        data.sort((a, b) => {
+          const numA = parseInt(a.id, 10);
+          const numB = parseInt(b.id, 10);
+          if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+          return a.sheetRow - b.sheetRow;
+        });
+      }
+      return data;
+    }
+    function updateAppUI() {
+      const activeData = getProcessedDataset();
+      if (activeData.length === 0) {
+        newsGrid.innerHTML = `
+          <div class="no-results" style="width: 100%;">
+            <i data-lucide="search-slash" style="width: 44px; height: 44px; opacity: 0.5; margin-bottom: 12px; color: #E2E8F0;"></i>
+            <h3 style="color: #FFFFFF;">Новин не знайдено</h3>
+            <p style="color: #E2E8F0;">Спробуйте обрати інший місяць або змінити пошуковий запит.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+      renderNewsFeed(activeData);
+      lucide.createIcons();
+    }
+    function playYoutubeInline(videoId, containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      container.innerHTML = `
+        <div class="iframe-wrapper">
+          <iframe 
+            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      `;
+    }
+    /**
+     * Рендеринг вертикальної стрічки новин
+     */
+    function renderNewsFeed(items) {
+      newsGrid.innerHTML = '';
+      items.forEach(item => {
+        let mediaLeftHtml = '';
+        const hasVideo = Boolean(item.youtubeId);
+        const hasImage = Boolean(item.imageUrl);
+        if (hasVideo) {
+          mediaLeftHtml = `
+            <div class="news-card-media-wrap has-video">
+              <div class="news-media-thumb-container">
+                <img 
+                  src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" 
+                  alt="${escapeHtml(item.title)}" 
+                  loading="lazy" 
+                  decoding="async"
+                  class="news-card-thumb-img" 
+                >
+                <div class="media-video-overlay">
+                  <div class="media-play-pill">
+                    <i data-lucide="play" style="width: 20px; height: 20px; margin-left: 2px;"></i>
+                  </div>
+                </div>
+                ${item.mediaTitle ? `<span class="media-caption-badge">${escapeHtml(item.mediaTitle)}</span>` : ''}
+              </div>
+            </div>
+          `;
+        } else if (hasImage) {
+          mediaLeftHtml = `
+            <div class="news-card-media-wrap">
+              <div class="news-media-thumb-container">
+                <img 
+                  src="${item.imageUrl}" 
+                  alt="${escapeHtml(item.title)}" 
+                  loading="lazy" 
+                  decoding="async"
+                  referrerpolicy="no-referrer"
+                  class="news-card-thumb-img" 
+                  onerror="this.closest('.news-card-media-wrap').style.display='none'"
+                >
+              </div>
+            </div>
+          `;
+        }
+        const cleanLead = item.lead ? escapeHtml(item.lead.trim()) : '';
+        const cardHtml = `
+          <article class="news-card" onclick="openModal('${item.id}')">
+            ${mediaLeftHtml}
+            <div class="news-card-body-wrap">
+              <div>
+                <div class="news-card-meta-top">
+                  <span class="badge">
+                    <i data-lucide="bookmark" style="width: 11px; height: 11px;"></i>
+                    #FAO_KNU
+                  </span>
+                  <span class="news-card-meta-text">№ ${item.id} • ${item.date}</span>
+                </div>
+                <h2 class="news-card-title">${escapeHtml(item.title)}</h2>
+                <div class="news-card-divider"></div>
+                ${cleanLead ? `<p class="news-card-excerpt">${cleanLead}</p>` : ''}
+              </div>
+              <div class="news-card-footer">
+                <span class="read-more-btn">
+                  <span>Читати повністю</span>
+                  <i data-lucide="arrow-right"></i>
+                </span>
+              </div>
+            </div>
+          </article>
+        `;
+        newsGrid.insertAdjacentHTML('beforeend', cardHtml);
+      });
+    }
+    /**
+     * Відкриття повного матеріалу в модальному вікні
+     */
+    function openModal(itemId) {
+      const item = allNewsItems.find(i => i.id === itemId);
+      if (!item) return;
+      const imageHtml = item.imageUrl ? `
+        <div class="modal-news-img-wrap">
+          <img 
+            src="${item.imageUrl}" 
+            alt="${escapeHtml(item.title)}" 
+            class="modal-news-img" 
+            decoding="async" 
+            referrerpolicy="no-referrer"
+          >
+        </div>
+      ` : '';
+      let mediaHtml = '';
+      if (item.youtubeId) {
+        mediaHtml = `
+          <div style="margin-top: 15px;">
+            <div class="iframe-wrapper">
+              <iframe 
+                src="https://www.youtube.com/embed/${item.youtubeId}?autoplay=0&rel=0" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        `;
+      } else if (item.url) {
+        mediaHtml = `
+          <div style="margin-top: 15px;">
+            <a href="${item.url}" target="_blank" class="generic-link-preview" style="padding: 10px 14px;">
+              <div class="link-icon-container" style="width: 32px; height: 32px;">
+                <i data-lucide="external-link"></i>
+              </div>
+              <div class="link-details">
+                <span class="link-title" style="font-size: 0.85rem;">${item.mediaTitle || 'Першоджерело новини'}</span>
+                <span class="link-domain">${item.url}</span>
+              </div>
+            </a>
+          </div>
+        `;
+      }
+      const formattedArticleBody = item.fullText ? formatFullArticleText(item.fullText) : '';
+      modalTarget.innerHTML = `
+        ${imageHtml}
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+          <span class="badge">#FAO_KNU</span>
+          <div class="news-card-meta-text">
+            <span>№ ${item.id} • ${item.date}</span>
+          </div>
+        </div>
+        <h1 class="modal-title">${escapeHtml(item.title)}</h1>
+        <div class="news-card-divider" style="width: 45px; height: 4px; margin-bottom: 16px;"></div>
+        ${formattedArticleBody ? `<div class="modal-paragraphs-block">${formattedArticleBody}</div>` : ''}
+        ${mediaHtml}
+      `;
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      lucide.createIcons();
+    }
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+      modalTarget.innerHTML = '';
+    }
+  </script>
+</body>
+</html>
