@@ -3,33 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <!-- Запобігання автоінверсії кольорів мобільними браузерами в темній темі системи -->
   <meta name="color-scheme" content="light">
   <title>FAO & КНУ імені Тараса Шевченка — Новини та дослідження</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/960px-Flag_of_Ukraine.svg.png">
-  <!-- Захист від блокування YouTube плеєра -->
+  <!-- Захист від витоку реферера -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <!-- Шрифт Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- YouTube IFrame API для захищеного відтворення без витоку URL -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <!-- Іконки Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      color-scheme: light;            /* Суворий світлий режим для усунення перефарбування карток браузером */
-      --primary-red: #b80000;         /* Фірмовий червоний акцент */
+      color-scheme: light;
+      --primary-red: #b80000;
       --primary-red-hover: #900000;
-      --bg-light: #F4F6F9;            /* Світло-сірий фон для десктопу */
-      --bg-card: #FFFFFF;             /* Чистий білий для карток */
-      --border-color: #E2E8F0;        /* Рамки та розділювачі */
-      --text-main: #0F172A;           /* Базовий темний текст карток */
-      --text-title: #0B1F3A;          /* Темно-синій для заголовків новин */
-      --text-body: #44546A;           /* Середній сіро-синій для тексту ліду та дат */
-      --text-muted: #64748B;          /* Спокійний сірий */
-      --accent-blue: #1E3E62;         /* Темно-синій акцент */
-      --daisi-navy: #123B66;          /* Зовнішній синій фон мобільної версії */
+      --bg-light: #F4F6F9;
+      --bg-card: #FFFFFF;
+      --border-color: #E2E8F0;
+      --text-main: #0F172A;
+      --text-title: #0B1F3A;
+      --text-body: #44546A;
+      --text-muted: #64748B;
+      --accent-blue: #1E3E62;
+      --daisi-navy: #123B66;
       --font-family: 'Montserrat', sans-serif;
     }
     *, *::before, *::after {
@@ -39,17 +40,36 @@
     }
     html, body {
       max-width: 100%;
-      overflow-x: hidden;
     }
     body {
       background-color: var(--bg-light);
       color: var(--text-main);
       font-family: var(--font-family);
       line-height: 1.6;
-      padding: 10px 14px 40px;
+      padding: 10px 14px 20px;
       overflow-wrap: break-word;
       word-break: break-word;
       -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* До авторизації сторінка ідеально вписується у висоту екрана без скролерів */
+    body:not(.logged-in) {
+      height: 100vh;
+      overflow: hidden;
+      padding: 8px 14px 10px;
+    }
+    @media (max-height: 650px), (max-width: 860px) {
+      body:not(.logged-in) {
+        height: auto;
+        overflow-y: auto;
+      }
+    }
+    body.logged-in {
+      height: auto;
+      overflow-y: auto;
+      padding-bottom: 40px;
     }
     /* Індикатор прокрутки */
     #progress-bar {
@@ -64,14 +84,15 @@
     }
     /* Шапка сайту */
     header {
-      padding: 18px 20px;
+      padding: 14px 20px;
       position: relative;
       background: radial-gradient(circle at top, rgba(184, 0, 0, 0.12) 0%, transparent 60%), var(--daisi-navy);
       border-bottom: 4px solid var(--primary-red);
       border-radius: 16px;
       box-shadow: 0 8px 25px rgba(18, 59, 102, 0.18);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       width: 100%;
+      flex-shrink: 0;
     }
     .header-container {
       display: flex;
@@ -88,21 +109,20 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      flex: 1 1 450px;
+      flex: 1 1 420px;
       max-width: 650px;
       min-width: 0;
     }
-    /* Рядок логотипа та заголовка */
     .branding-header-row {
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       width: 100%;
     }
     .daisi-header-logo {
-      width: clamp(52px, 12vw, 66px);
-      height: clamp(52px, 12vw, 66px);
+      width: clamp(44px, 10vw, 60px);
+      height: clamp(44px, 10vw, 60px);
       border-radius: 50%;
       object-fit: cover;
       flex-shrink: 0;
@@ -125,7 +145,7 @@
       min-width: 0;
     }
     h1 {
-      font-size: clamp(1.3rem, 4vw, 1.65rem);
+      font-size: clamp(1.15rem, 3.4vw, 1.5rem);
       font-weight: 800;
       letter-spacing: -0.5px;
       margin-bottom: 2px;
@@ -133,26 +153,160 @@
       line-height: 1.2;
     }
     .subtitle {
-      font-size: clamp(0.74rem, 2vw, 0.82rem);
+      font-size: clamp(0.72rem, 1.8vw, 0.8rem);
       color: #E2E8F0 !important;
       margin: 0;
       font-weight: 500;
     }
-    /* Опис проєкту (#F4F7FB) */
     .project-description {
-      font-size: clamp(0.74rem, 1.8vw, 0.8rem);
+      font-size: clamp(0.7rem, 1.4vw, 0.76rem);
       color: #F4F7FB !important;
-      line-height: 1.5;
+      line-height: 1.45;
       margin: 0;
       max-width: 580px;
       opacity: 0.95;
     }
-    /* Компактне пошукове поле */
-    .header-search {
-      flex: 0 0 auto;
-      width: clamp(260px, 26vw, 320px);
-      max-width: 100%;
+    /* ПРАВИЙ ВЕРХНІЙ БЛОК ШАПКИ (ВХІД / ПОШУК) */
+    .header-right-zone {
+      flex: 0 0 320px;
+      max-width: 350px;
+      width: 100%;
       margin-left: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    /* ЕСТЕТИЧНА КАРТКА ВХОДУ В КОЛІР ШАПКИ */
+    .auth-top-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 10px 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-top: 3px solid var(--primary-red);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .auth-top-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .auth-top-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .auth-top-badge svg {
+      width: 15px;
+      height: 15px;
+      color: #FF6B6B;
+      flex-shrink: 0;
+    }
+    .auth-top-status-text {
+      font-size: 0.68rem;
+      color: #CBD5E1;
+      font-weight: 500;
+    }
+    .auth-top-form {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .auth-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .auth-field-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.3px;
+    }
+    .auth-top-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .auth-top-icon {
+      position: absolute;
+      left: 10px;
+      color: #475569;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+    .auth-top-input {
+      width: 100%;
+      min-height: 35px;
+      padding: 5px 10px 5px 32px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-size: 0.8rem;
+      color: #0F172A !important;
+      background: #FFFFFF !important;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .auth-top-input::placeholder {
+      color: #64748B;
+      font-weight: 500;
+    }
+    .auth-top-input:focus {
+      border-color: #FF6B6B;
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3);
+    }
+    .auth-top-btn {
+      background-color: var(--primary-red);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 12px;
+      min-height: 35px;
+      border-radius: 8px;
+      font-family: var(--font-family);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      touch-action: manipulation;
+      margin-top: 2px;
+    }
+    .auth-top-btn:hover {
+      background-color: var(--primary-red-hover);
+    }
+    .auth-top-error {
+      background: rgba(255, 245, 245, 0.95);
+      color: #C53030;
+      border: 1px solid #FEB2B2;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+    }
+    /* ПОШУК ТА СЕСІЯ В ШАПЦІ (ПІСЛЯ АВТОРИЗАЦІЇ) */
+    .header-search {
+      width: 100%;
     }
     .search-container {
       position: relative;
@@ -160,14 +314,14 @@
     }
     .search-input {
       width: 100%;
-      min-height: 42px;
-      padding: 8px 16px 8px 38px;
+      min-height: 40px;
+      padding: 7px 16px 7px 38px;
       background-color: #FFFFFF !important;
       border: 1px solid var(--border-color);
       border-radius: 30px;
       color: #0B1F3A !important;
       font-family: var(--font-family);
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       transition: all 0.25s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
     }
@@ -186,6 +340,109 @@
       width: 15px;
       height: 15px;
     }
+    .session-header-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .session-user-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .logout-header-btn {
+      background: rgba(184, 0, 0, 0.85);
+      color: white;
+      border: none;
+      font-weight: 700;
+      font-size: 0.72rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      transition: background 0.2s ease;
+      touch-action: manipulation;
+    }
+    .logout-header-btn:hover {
+      background: var(--primary-red-hover);
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0;
+      width: 100%;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    body:not(.logged-in) main {
+      justify-content: center;
+      min-height: 0;
+    }
+    /* КОМПАКТНЕ ТА ЗБАЛАНСОВАНЕ ПОВІДОМЛЕННЯ ПРО ЗАКРИТИЙ ДОСТУП */
+    .portal-lock-notice {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--primary-red);
+      border-radius: 14px;
+      padding: 16px 20px;
+      text-align: center;
+      max-width: 580px;
+      margin: 8px auto;
+      box-shadow: 0 4px 16px rgba(11, 25, 44, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .lock-icon-pill {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(184, 0, 0, 0.08);
+      color: var(--primary-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .portal-lock-notice h2 {
+      font-size: 1.1rem;
+      color: #0B1F3A;
+      font-weight: 800;
+      margin: 0;
+    }
+    .portal-lock-notice p {
+      font-size: 0.8rem;
+      color: #44546A;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .lock-tip-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      background: var(--bg-light);
+      padding: 4px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      margin-top: 2px;
+    }
     /* Панель керування: Сортування та вибір місяця */
     .controls-card {
       background: #FFFFFF !important;
@@ -196,7 +453,7 @@
       margin-bottom: 22px;
       box-shadow: 0 4px 15px rgba(11, 25, 44, 0.02);
       display: flex;
-      justify-content: flex-start;
+      justify-content: space-between;
       align-items: center;
       max-width: 1200px;
       margin-left: auto;
@@ -208,6 +465,7 @@
       align-items: center;
       gap: 20px;
       flex-wrap: wrap;
+      width: 100%;
     }
     .control-item-wrapper {
       display: flex;
@@ -254,13 +512,7 @@
       height: 14px;
       pointer-events: none;
     }
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0;
-      width: 100%;
-    }
-    /* КАРТКИ НОВИН У СВІТЛІЙ ТЕМІ (БІЛЕ ТЛО, ТЕМНО-СИНІЙ ТЕКСТ) */
+    /* КАРТКИ НОВИН */
     .news-feed {
       display: flex;
       flex-direction: column;
@@ -289,13 +541,12 @@
       box-shadow: 0 12px 28px rgba(11, 25, 44, 0.1);
       border-color: rgba(30, 62, 98, 0.25) !important;
     }
-    /* Ліва колонка картки: Медіа (Десктоп) */
     .news-card-media-wrap {
       flex: 0 0 33%;
       max-width: 360px;
       min-width: 250px;
       position: relative;
-      background-color: #F8FAFC !important;
+      background-color: #0F172A !important;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -308,6 +559,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #0F172A;
     }
     .news-card-thumb-img {
       width: 100%;
@@ -317,7 +569,7 @@
       transition: transform 0.4s ease;
     }
     .news-card:hover .news-card-thumb-img {
-      transform: scale(1.04);
+      transform: scale(1.05);
     }
     .media-video-overlay {
       position: absolute;
@@ -325,45 +577,31 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.32);
+      background: rgba(0, 0, 0, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: background-color 0.3s ease;
     }
     .news-card:hover .media-video-overlay {
-      background-color: rgba(0, 0, 0, 0.48);
+      background-color: rgba(0, 0, 0, 0.52);
     }
     .media-play-pill {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       background-color: var(--primary-red);
       border-radius: 50%;
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(184, 0, 0, 0.45);
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 18px rgba(184, 0, 0, 0.55);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
     }
     .news-card:hover .media-play-pill {
-      transform: scale(1.12);
+      transform: scale(1.14);
+      box-shadow: 0 6px 22px rgba(184, 0, 0, 0.75);
     }
-    .media-caption-badge {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(transparent, rgba(0,0,0,0.85));
-      padding: 14px 12px 6px;
-      color: white;
-      font-size: 0.72rem;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    /* Права колонка картки: Заголовок + Лід */
     .news-card-body-wrap {
       flex: 1 1 auto;
       padding: 22px 26px;
@@ -381,24 +619,11 @@
       margin-bottom: 8px;
       flex-wrap: wrap;
     }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 9px;
-      border-radius: 50px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      background-color: rgba(184, 0, 0, 0.08) !important;
-      color: var(--primary-red) !important;
-    }
     .news-card-meta-text {
       font-size: 0.75rem;
       color: #44546A !important;
-      font-weight: 500;
+      font-weight: 600;
     }
-    /* Темно-синій колір заголовків новин (#0B1F3A) */
     .news-card-title,
     .news-card h2 {
       font-size: clamp(1.12rem, 3.2vw, 1.25rem);
@@ -421,7 +646,6 @@
       border-radius: 2px;
       margin-bottom: 12px;
     }
-    /* Сіро-синій текст ліду (#44546A), до 12 рядків */
     .news-card-excerpt,
     .news-card p {
       font-size: clamp(0.85rem, 2.2vw, 0.9rem);
@@ -465,7 +689,7 @@
       gap: 9px;
       color: var(--primary-red-hover) !important;
     }
-    .read-more-btn i {
+    .read-more-btn svg {
       width: 15px;
       height: 15px;
     }
@@ -494,7 +718,7 @@
     .modal-card {
       background: #FFFFFF !important;
       border-radius: 18px;
-      width: min(95vw, 760px);
+      width: min(94vw, 1140px);
       max-height: 92vh;
       display: flex;
       flex-direction: column;
@@ -510,8 +734,8 @@
     }
     .modal-close-btn {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 12px;
+      right: 12px;
       background: rgba(255, 255, 255, 0.95);
       border: 1px solid var(--border-color);
       width: 44px;
@@ -523,7 +747,7 @@
       cursor: pointer;
       color: var(--text-main);
       transition: all 0.2s ease;
-      z-index: 20;
+      z-index: 50;
       touch-action: manipulation;
     }
     .modal-close-btn:hover {
@@ -532,52 +756,193 @@
       border-color: var(--primary-red);
     }
     .modal-scrollable-content {
-      padding: 24px 22px;
+      padding: 32px 38px;
       overflow-y: auto;
       scrollbar-width: thin;
       -webkit-overflow-scrolling: touch;
       background-color: #FFFFFF !important;
     }
-    /* Збереження вихідних пропорцій фото у модальному вікні */
-    .modal-news-img-wrap {
+    /* ==============================================================
+       КАСТОМНИЙ ВІДЕОПЛЕЄР ІЗ ЗАХИСТОМ ВІД ВИТОКУ URL ТА ПЕРЕХОДІВ
+       ============================================================== */
+    .modal-video-wrap {
       width: 100%;
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
-      margin-bottom: 20px;
-      background-color: transparent;
+      margin-bottom: 24px;
+      background-color: #070D18;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
       display: flex;
+      flex-direction: column;
+    }
+    .video-viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #000000;
+      overflow: hidden;
+    }
+    /* Забороняємо будь-які події миші безпосередньо над iframe (блокує ховери, кліки по посиланнях і меню) */
+    .video-viewport iframe,
+    .video-viewport #ytPlayerHost {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      pointer-events: none !important;
+    }
+    /* Суцільний прозорий щит-перехоплювач над усім відео */
+    .video-shield-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
       justify-content: center;
+    }
+    .video-center-play-badge {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: rgba(184, 0, 0, 0.88);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 22px rgba(0, 0, 0, 0.45);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+      opacity: 1;
+      pointer-events: none;
+    }
+    .video-center-play-badge.hidden {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+    /* Власна панель керування без жодних сторонніх кнопок чи логотипів YouTube */
+    .custom-player-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: #0B1727;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      z-index: 20;
+    }
+    .cp-btn {
+      background: transparent;
+      border: none;
+      color: #FFFFFF;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .cp-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FF6B6B;
+    }
+    .cp-time {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #CBD5E1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .cp-progress-rail {
+      position: relative;
+      flex: 1;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
       align-items: center;
     }
-    .modal-news-img {
-      display: block;
-      max-width: 100%;
-      width: auto;
-      height: auto;
-      max-height: 520px;
-      margin: 0 auto;
-      object-fit: contain;
-      border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(11, 25, 44, 0.08);
+    .cp-progress-buffer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.35);
+      border-radius: 3px;
+      width: 0%;
+      pointer-events: none;
+    }
+    .cp-progress-played {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: var(--primary-red);
+      border-radius: 3px;
+      width: 0%;
+      pointer-events: none;
+    }
+    .cp-seek-input {
+      position: absolute;
+      top: -8px;
+      left: 0;
+      width: 100%;
+      height: 22px;
+      opacity: 0;
+      cursor: pointer;
+      margin: 0;
+      z-index: 5;
+    }
+    .cp-volume-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cp-volume-input {
+      width: 70px;
+      height: 4px;
+      accent-color: var(--primary-red);
+      cursor: pointer;
+    }
+    /* Повноекранний режим плеєра */
+    .modal-video-wrap:fullscreen {
+      border-radius: 0;
+      width: 100vw;
+      height: 100vh;
+      justify-content: center;
+    }
+    .modal-video-wrap:fullscreen .video-viewport {
+      flex: 1;
+      aspect-ratio: unset;
+      height: calc(100vh - 52px);
     }
     .modal-title {
-      font-size: clamp(1.2rem, 3.8vw, 1.45rem);
+      font-size: clamp(1.25rem, 3.8vw, 1.6rem);
       font-weight: 800;
       color: #0B1F3A !important;
       line-height: 1.35;
       margin-bottom: 14px;
       padding-right: 30px;
     }
-    /* СТИЛІЗАЦІЯ ПОВНОГО ТЕКСТУ */
     .modal-paragraphs-block {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 20px;
     }
     .modal-paragraph {
-      font-size: clamp(0.9rem, 2.4vw, 0.95rem);
-      line-height: 1.75;
+      font-size: clamp(0.92rem, 2.4vw, 0.98rem);
+      line-height: 1.8;
       color: #1E293B !important;
       white-space: pre-line;
       overflow-wrap: break-word;
@@ -602,7 +967,7 @@
       line-height: 1.5;
     }
     .modal-question-para strong {
-      font-size: 1.02rem;
+      font-size: 1.04rem;
     }
     .article-byline-para {
       margin-top: 20px;
@@ -610,17 +975,9 @@
       border-top: 1px dashed var(--border-color);
       font-size: 0.92rem;
     }
-    .article-subheading {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #0B1F3A !important;
-      margin-top: 18px;
-      margin-bottom: 6px;
-      line-height: 1.4;
-    }
     .article-list-item {
-      font-size: 0.95rem;
-      line-height: 1.65;
+      font-size: 0.96rem;
+      line-height: 1.7;
       color: #1E293B !important;
       margin-bottom: 6px;
       padding-left: 4px;
@@ -635,67 +992,7 @@
     .news-inline-link:hover {
       color: var(--primary-red);
     }
-    .iframe-wrapper {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: 10px;
-      overflow: hidden;
-      background-color: #000;
-    }
-    .iframe-wrapper iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-    .generic-link-preview {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background-color: var(--bg-light);
-      border: 1px solid var(--border-color);
-      padding: 8px 12px;
-      border-radius: 10px;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.2s ease;
-      touch-action: manipulation;
-    }
-    .generic-link-preview:hover {
-      border-color: var(--accent-blue);
-      background-color: rgba(30, 62, 98, 0.04);
-    }
-    .link-icon-container {
-      width: 28px;
-      height: 28px;
-      background-color: rgba(30, 62, 98, 0.1);
-      color: var(--accent-blue);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .link-details {
-      min-width: 0;
-    }
-    .link-title {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #0B1F3A !important;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .link-domain {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    /* Плаваюча панель */
+    /* ПЛАВАЮЧА ПАНЕЛЬ */
     .floating-controls-panel {
       position: fixed;
       bottom: 25px;
@@ -767,7 +1064,7 @@
       background-color: var(--primary-red-hover);
       transform: translateY(-2px);
     }
-    .back-to-top i {
+    .back-to-top svg {
       width: 16px;
       height: 16px;
     }
@@ -780,9 +1077,9 @@
       text-align: center;
     }
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(184, 0, 0, 0.1);
+      width: 38px;
+      height: 38px;
+      border: 3px solid rgba(184, 0, 0, 0.12);
       border-top-color: var(--primary-red);
       border-radius: 50%;
       animation: spin 0.8s infinite linear;
@@ -795,10 +1092,11 @@
     .loading-state p {
       color: var(--text-muted);
       font-weight: 500;
+      font-size: 0.88rem;
     }
     .error-icon {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       color: var(--primary-red);
       margin-bottom: 12px;
     }
@@ -812,62 +1110,66 @@
       max-width: 400px;
       font-size: 0.85rem;
     }
-    .retry-btn {
-      background-color: var(--primary-red);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      min-height: 44px;
-      border-radius: 30px;
-      font-family: var(--font-family);
-      font-weight: 700;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      touch-action: manipulation;
-    }
-    .retry-btn:hover {
-      background-color: var(--primary-red-hover);
-    }
-    /* ПІДВАЛ ТА ПОКРАЩЕНИЙ БЛОК КОНТАКТІВ */
+    /* ПІДВАЛ */
     footer {
-      padding: 30px 10px 15px;
+      padding: 24px 10px 14px;
       border-top: 1px solid var(--border-color);
-      margin-top: 45px;
+      margin-top: 35px;
       max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
       width: 100%;
+      flex-shrink: 0;
+    }
+    /* Компактний вигляд підвалу до авторизації для поміщення у висоту екрана */
+    body:not(.logged-in) footer {
+      margin-top: auto;
+      padding: 8px 10px 4px;
+      border-top: 1px solid var(--border-color);
     }
     .footer-top-row {
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       width: 100%;
+    }
+    body:not(.logged-in) .footer-top-row {
+      margin-bottom: 6px;
     }
     .footer-contact-block {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
+      gap: 6px;
       text-align: left;
       max-width: 800px;
       width: 100%;
     }
+    body:not(.logged-in) .footer-contact-block {
+      gap: 3px;
+    }
     .contact-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: #0B1F3A;
       margin: 0;
       letter-spacing: -0.3px;
     }
+    body:not(.logged-in) .contact-title {
+      font-size: 0.92rem;
+    }
     .footer-funding-text {
-      font-size: clamp(0.76rem, 2vw, 0.82rem);
-      line-height: 1.6;
+      font-size: clamp(0.74rem, 1.8vw, 0.8rem);
+      line-height: 1.5;
       color: #44546A;
       text-align: left;
-      margin: 2px 0 6px 0;
+      margin: 2px 0 4px 0;
+    }
+    body:not(.logged-in) .footer-funding-text {
+      font-size: 0.72rem;
+      line-height: 1.35;
+      margin: 0;
     }
     .contact-inline-link {
       color: var(--accent-blue);
@@ -879,59 +1181,78 @@
       color: var(--primary-red);
     }
     .contact-question {
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       font-weight: 700;
       color: #334155;
-      margin-top: 4px;
+      margin-top: 2px;
+    }
+    body:not(.logged-in) .contact-question {
+      font-size: 0.74rem;
+      margin-top: 0;
     }
     .contact-email {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       font-weight: 700;
       color: var(--primary-red);
       text-decoration: none;
       transition: color 0.2s ease;
       display: inline-block;
-      padding: 2px 0;
+      padding: 1px 0;
+    }
+    body:not(.logged-in) .contact-email {
+      font-size: 0.76rem;
     }
     .contact-email:hover {
       color: var(--primary-red-hover);
       text-decoration: underline;
     }
-    /* Структуровані блоки посилань без дублювання іконок */
     .footer-links-grid {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
       width: 100%;
+    }
+    body:not(.logged-in) .footer-links-grid {
+      margin-top: 4px;
+      gap: 4px;
     }
     .footer-link-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
     .footer-group-label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: #0B1F3A;
-      min-width: 75px;
+      min-width: 65px;
+    }
+    body:not(.logged-in) .footer-group-label {
+      font-size: 0.72rem;
+      min-width: 55px;
     }
     .footer-action-chip {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
+      padding: 5px 12px;
       background: #FFFFFF;
       border: 1px solid var(--border-color);
       border-radius: 20px;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 600;
       color: var(--accent-blue);
       text-decoration: none;
       transition: all 0.2s ease;
-      min-height: 36px;
+      min-height: 34px;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    }
+    body:not(.logged-in) .footer-action-chip {
+      min-height: 26px;
+      padding: 2px 10px;
+      font-size: 0.7rem;
     }
     .footer-action-chip:hover {
       border-color: var(--primary-red);
@@ -939,75 +1260,79 @@
       background: rgba(184, 0, 0, 0.04);
       transform: translateY(-1px);
     }
-    .footer-action-chip i,
     .footer-action-chip svg {
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       flex-shrink: 0;
     }
     .footer-copy {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: #94A3B8;
       text-align: left;
-      margin-top: 14px;
+      margin-top: 12px;
       border-top: 1px dashed var(--border-color);
-      padding-top: 12px;
+      padding-top: 10px;
     }
-    /* ==============================================================
-       АДАПТИВНІ БРЕЙКПОІНТИ (1024px, 768px, 480px, 375px)
-       ============================================================== */
+    body:not(.logged-in) .footer-copy {
+      margin-top: 4px;
+      padding-top: 4px;
+      font-size: 0.68rem;
+    }
+    /* АДАПТИВНІ БРЕЙКПОІНТИ */
     @media (max-width: 1024px) {
+      .header-container { gap: 14px; }
+      .news-card-media-wrap { flex: 0 0 35%; max-width: 320px; }
+      .modal-card { width: 95vw; }
+      .modal-scrollable-content { padding: 26px 24px; }
+    }
+    @media (max-width: 860px) {
       .header-container {
-        gap: 14px;
+        flex-direction: column;
+        align-items: stretch;
       }
-      .news-card-media-wrap {
-        flex: 0 0 35%;
-        max-width: 320px;
+      .header-branding {
+        max-width: 100%;
+        width: 100%;
+      }
+      .header-right-zone {
+        max-width: 100%;
+        width: 100%;
+        margin-left: 0;
+        margin-top: 6px;
+      }
+      .auth-top-card {
+        padding: 10px 12px;
+      }
+      .auth-top-input,
+      .search-input,
+      .custom-select,
+      .floating-search-input {
+        font-size: 16px !important;
+        min-height: 42px;
+      }
+      .auth-top-btn {
+        min-height: 42px;
       }
     }
-    /* Мобільні пристрої та планшети (<= 768px) */
     @media (max-width: 768px) {
-      html, body {
-        background-color: var(--daisi-navy) !important;
-      }
-      body {
-        padding: 8px 10px 40px;
-      }
+      html, body { background-color: var(--daisi-navy) !important; }
+      body { padding: 8px 10px 30px; }
       header {
-        padding: 16px 14px;
+        padding: 14px 12px;
         border-radius: 14px;
         background: radial-gradient(circle at top, rgba(184, 0, 0, 0.14) 0%, transparent 60%), #123B66;
         border: 1px solid rgba(255, 255, 255, 0.15);
         border-bottom: 4px solid var(--primary-red);
       }
-      .header-container {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-      }
-      .header-branding {
-        flex: 0 0 auto;
-        max-width: 100%;
-        width: 100%;
-      }
-      .header-search {
-        flex: 0 0 auto;
-        width: 100%;
-        max-width: 320px;
-        margin-left: 0;
-        margin-top: 4px;
-      }
       .controls-card {
-        padding: 10px 14px;
-        justify-content: flex-start;
+        padding: 12px 14px;
         background: #FFFFFF !important;
-        background-color: #FFFFFF !important;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
       }
       .controls-left-group {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
+        gap: 12px;
       }
       .control-item-wrapper {
         width: 100%;
@@ -1021,15 +1346,10 @@
       .custom-select {
         width: 100%;
         min-height: 44px;
-        background-color: #FFFFFF !important;
-        color: #0B1F3A !important;
       }
       .news-card {
         flex-direction: column;
         min-height: auto;
-        background: #FFFFFF !important;
-        background-color: #FFFFFF !important;
-        color: #0F172A !important;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
       }
       .news-card-media-wrap {
@@ -1037,91 +1357,25 @@
         width: 100%;
         max-width: 100%;
         min-width: 0;
-        height: auto;
-        background: #F8FAFC !important;
-        background-color: #F8FAFC !important;
         border-bottom: 1px solid var(--border-color);
       }
       .news-media-thumb-container {
         width: 100%;
-        height: auto;
-        background-color: #F8FAFC !important;
-      }
-      .news-card-thumb-img {
-        width: 100%;
-        height: auto;
-        max-width: 100%;
-        max-height: 380px;
-        object-fit: contain;
-      }
-      .news-card-media-wrap.has-video .news-media-thumb-container {
         aspect-ratio: 16 / 9;
       }
-      .news-card-media-wrap.has-video .news-card-thumb-img {
-        height: 100%;
-        object-fit: cover;
-      }
       .news-card-body-wrap {
-        padding: 16px 16px 14px;
-        background: #FFFFFF !important;
-        background-color: #FFFFFF !important;
+        padding: 16px 14px 14px;
       }
-      .news-card-title,
-      .news-card h2 {
-        color: #0B1F3A !important;
-      }
-      .news-card-excerpt,
-      .news-card p {
-        color: #44546A !important;
-      }
-      .news-card-meta-text {
-        color: #44546A !important;
-      }
-      .read-more-btn {
-        color: var(--primary-red) !important;
-      }
-      footer {
-        border-top: 1px solid rgba(255, 255, 255, 0.18);
-      }
-      .contact-title {
-        color: #FFFFFF !important;
-      }
-      .footer-funding-text {
-        color: #E2E8F0 !important;
-      }
-      .contact-inline-link {
-        color: #FFFFFF !important;
-      }
-      .contact-question {
-        color: #FFFFFF !important;
-      }
-      .contact-email {
-        color: #FF6B6B !important;
-      }
-      .footer-group-label {
-        color: #FFFFFF !important;
-      }
+      footer { border-top: 1px solid rgba(255, 255, 255, 0.18); }
+      .contact-title, .contact-inline-link, .contact-question, .footer-group-label { color: #FFFFFF !important; }
+      .footer-funding-text { color: #E2E8F0 !important; }
+      .contact-email { color: #FF6B6B !important; }
       .footer-action-chip {
         background: rgba(255, 255, 255, 0.12);
         color: #FFFFFF !important;
         border-color: rgba(255, 255, 255, 0.25);
       }
-      .footer-action-chip:hover {
-        background: rgba(255, 255, 255, 0.22);
-        color: #FFFFFF !important;
-        border-color: #FFFFFF;
-      }
-      .footer-copy {
-        color: #CBD5E1 !important;
-        border-top: 1px dashed rgba(255, 255, 255, 0.2);
-      }
-      .loading-state p, .no-results p {
-        color: #E2E8F0;
-      }
-      .no-results h3 {
-        color: #FFFFFF;
-      }
-      /* Плаваюча панель на мобільному */
+      .footer-copy { color: #CBD5E1 !important; border-top: 1px dashed rgba(255, 255, 255, 0.2); }
       .floating-controls-panel {
         bottom: 12px;
         right: 12px;
@@ -1131,16 +1385,8 @@
         padding: 4px 8px;
         border-radius: 35px;
       }
-      .floating-search-box {
-        flex: 1;
-      }
-      .floating-search-input {
-        width: 100%;
-      }
-      .floating-search-input:focus {
-        width: 100%;
-      }
-      /* Модальне вікно */
+      .floating-search-box { flex: 1; }
+      .floating-search-input { width: 100%; }
       .modal-card {
         width: 96vw;
         max-height: 94vh;
@@ -1149,48 +1395,28 @@
       .modal-scrollable-content {
         padding: 18px 14px 20px;
       }
-      .modal-news-img {
-        max-height: 45vh;
+      .modal-video-wrap {
+        margin-bottom: 16px;
+        border-radius: 10px;
       }
     }
-    /* Компактні телефони (<= 480px) */
     @media (max-width: 480px) {
-      body {
-        padding: 6px 8px 50px;
-      }
-      header {
-        padding: 14px 12px;
-      }
-      .branding-header-row {
-        gap: 10px;
-      }
-      .daisi-header-logo {
-        width: 48px;
-        height: 48px;
-      }
-      .header-search {
-        max-width: 100%;
-      }
+      body { padding: 6px 8px 40px; }
+      header { padding: 12px 10px; }
+      .branding-header-row { gap: 10px; }
+      .daisi-header-logo { width: 40px; height: 40px; }
       .control-item-wrapper {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
       }
-      .custom-select-wrapper {
-        max-width: 100%;
+      .custom-select-wrapper { max-width: 100%; }
+      .portal-lock-notice {
+        padding: 14px 12px;
+        margin: 10px auto;
       }
-      .news-card-body-wrap {
-        padding: 14px 12px 12px;
-      }
-      .news-card-excerpt {
-        margin-bottom: 12px;
-      }
-      .footer-contact-block {
-        gap: 4px;
-      }
-      .footer-copy {
-        text-align: center;
-      }
+      .footer-contact-block { gap: 3px; }
+      .footer-copy { text-align: center; }
     }
   </style>
 </head>
@@ -1226,18 +1452,76 @@
           Співпраця Продовольчої та сільськогосподарської організації ООН (FAO) та Київського національного університету імені Тараса Шевченка спрямована на реалізацію спільних дослідницьких, освітніх та експертних ініціатив у сфері продовольчої безпеки, сталого розвитку агросектору, кліматичної стійкості та відновлення України.
         </p>
       </div>
-      <!-- Пошук (компактний та пропорційний) -->
-      <div class="header-search">
-        <div class="search-container">
-          <i data-lucide="search" class="search-icon"></i>
-          <input type="text" id="mainSearchInput" class="search-input" placeholder="Шукати в новинах, тексті або анонсах...">
+      <!-- ПРАВА ВЕРХНЯ ЗОНА: ВХІД / ПОШУК / СЕСІЯ -->
+      <div class="header-right-zone">
+        <!-- 1. Компактний віджет авторизації в кольоровій гамі шапки -->
+        <div id="authGateTop" class="auth-top-card">
+          <div class="auth-top-header">
+            <span class="auth-top-badge">
+              <i data-lucide="shield-check"></i>
+              <span>Вхід до системи</span>
+            </span>
+            <span class="auth-top-status-text">Захищений доступ</span>
+          </div>
+          <form id="authForm" onsubmit="handleAuthSubmit(event)" class="auth-top-form">
+            <div class="auth-field-group">
+              <label for="authLogin" class="auth-field-label">Логін</label>
+              <div class="auth-top-field">
+                <i data-lucide="user" class="auth-top-icon"></i>
+                <input type="text" id="authLogin" class="auth-top-input" placeholder="Введіть логін" autocomplete="username" required>
+              </div>
+            </div>
+            <div class="auth-field-group">
+              <label for="authPass" class="auth-field-label">Пароль</label>
+              <div class="auth-top-field">
+                <i data-lucide="lock" class="auth-top-icon"></i>
+                <input type="password" id="authPass" class="auth-top-input" placeholder="Введіть пароль" autocomplete="current-password" required>
+              </div>
+            </div>
+            <button type="submit" id="authSubmitBtn" class="auth-top-btn">
+              <span>Увійти</span>
+              <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+            </button>
+            <div id="authErrorMsg" class="auth-top-error"></div>
+          </form>
+        </div>
+        <!-- 2. Пошук та бейдж користувача (показуються після успішного входу) -->
+        <div id="headerSearchBox" class="header-search" style="display: none;">
+          <div class="search-container">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="mainSearchInput" class="search-input" placeholder="Шукати в новинах або тексті...">
+          </div>
+        </div>
+        <div id="sessionHeaderBadge" class="session-header-badge" style="display: none;">
+          <span class="session-user-text">
+            <i data-lucide="check-circle" style="width: 14px; height: 14px; color: #4ADE80;"></i>
+            <span id="sessionUserLabel">Авторизовано</span>
+          </span>
+          <button type="button" class="logout-header-btn" onclick="handleLogout()" title="Вийти із системи">
+            <i data-lucide="log-out" style="width: 12px; height: 12px;"></i>
+            <span>Вийти</span>
+          </button>
         </div>
       </div>
     </div>
   </header>
   <main>
-    <!-- Панель керування: Сортування та Вибір місяця (вирівняно ліворуч) -->
-    <div class="controls-card">
+    <!-- КОМПАКТНА ПЛАШКА ЗАКРИТОГО ДОСТУПУ (ДО АВТОРИЗАЦІЇ) -->
+    <div id="portalLockNotice" class="portal-lock-notice">
+      <div class="lock-icon-pill">
+        <i data-lucide="lock" style="width: 20px; height: 20px;"></i>
+      </div>
+      <h2>Матеріали досліджень закрито</h2>
+      <p>
+        Новини, аналітика та відеоматеріали партнерства FAO & КНУ захищені шифруванням. Будь ласка, введіть логін та пароль у формі у правому верхньому кутку сторінки.
+      </p>
+      <div class="lock-tip-box">
+        <i data-lucide="arrow-up-right" style="width: 13px; height: 13px;"></i>
+        <span>Форма входу розташована вгорі праворуч</span>
+      </div>
+    </div>
+    <!-- ПАНЕЛЬ КЕРУВАННЯ (ПІСЛЯ АВТОРИЗАЦІЇ) -->
+    <div class="controls-card" id="controlsCard" style="display: none;">
       <div class="controls-left-group">
         <div class="control-item-wrapper">
           <span class="control-label" for="sortSelect">Сортувати:</span>
@@ -1263,19 +1547,18 @@
       </div>
     </div>
     <!-- Завантаження -->
-    <div id="loadingState" class="loading-state">
+    <div id="loadingState" class="loading-state" style="display: none;">
       <div class="spinner"></div>
-      <p>Оновлення стрічки новин із таблиці проєкту...</p>
+      <p>Отримання захищених матеріалів та відео...</p>
     </div>
     <!-- Помилка зв'язку -->
     <div id="errorState" class="error-state" style="display: none;">
       <i data-lucide="alert-triangle" class="error-icon"></i>
-      <h3>Збій синхронізації з таблицею</h3>
-      <p>Не вдалося завантажити дані з Google Sheets. Перевірте доступ або оновіть сторінку.</p>
-      <button class="retry-btn" id="retryFetchBtn">Оновити сторінку</button>
+      <h3>Збій отримання даних</h3>
+      <p id="errorStateText">Не вдалося завантажити матеріали через Apps Script. Перевірте з'єднання або оновіть сторінку.</p>
     </div>
-    <!-- Вертикальна одноколонкова стрічка новин -->
-    <div class="news-feed" id="newsGrid"></div>
+    <!-- Вертикальна стрічка новин -->
+    <div class="news-feed" id="newsGrid" style="display: none;"></div>
   </main>
   <!-- Плаваюча панель швидкого пошуку і повернення нагору -->
   <div class="floating-controls-panel" id="floatingControls">
@@ -1293,12 +1576,10 @@
       <button class="modal-close-btn" id="modalCloseBtn" title="Закрити">
         <i data-lucide="x"></i>
       </button>
-      <div class="modal-scrollable-content" id="modalTarget">
-        <!-- Тільки повний текст новини завантажується сюди -->
-      </div>
+      <div class="modal-scrollable-content" id="modalTarget"></div>
     </div>
   </div>
-  <!-- Підвал: інформативний структурований блок контактів -->
+  <!-- Підвал -->
   <footer>
     <div class="footer-top-row">
       <div class="footer-contact-block">
@@ -1308,7 +1589,6 @@
         </p>
         <p class="contact-question">Маєте питання чи пропозиції? Напишіть нам!</p>
         <a href="mailto:grant.ndch@knu.ua" class="contact-email">grant.ndch@knu.ua</a>
-        <!-- Структуровані контакти та ресурси організацій -->
         <div class="footer-links-grid">
           <div class="footer-link-group">
             <span class="footer-group-label">FAO:</span>
@@ -1316,7 +1596,7 @@
               <i data-lucide="globe"></i> fao.org
             </a>
             <a href="https://www.facebook.com/FAOUkraine" target="_blank" rel="noopener noreferrer" class="footer-action-chip" title="Facebook FAO Ukraine">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
               </svg>
               <span>Facebook</span>
@@ -1328,7 +1608,7 @@
               <i data-lucide="globe"></i> knu.ua
             </a>
             <a href="https://www.facebook.com/kyiv.university/" target="_blank" rel="noopener noreferrer" class="footer-action-chip" title="Офіційна сторінка КНУ у Facebook">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
               </svg>
               <span>Facebook</span>
@@ -1337,18 +1617,16 @@
         </div>
       </div>
     </div>
-    <!-- Оновлений копірайт -->
     <div class="footer-copy">
       &copy; 2026 FAO & КНУ імені Тараса Шевченка
     </div>
   </footer>
   <script>
     /**
-     * КРИПТОГРАФІЧНЕ СХОВИЩЕ URL (NIST FIPS 180-4 SHA-256 CTR Stream Cipher)
-     * URL-адреса джерела повністю інкапсульована. Прямих відкритих адрес немає в коді.
+     * ========================================================================
+     * ДЕШИФРАТОР NIST FIPS 180-4 SHA-256 CTR
+     * ========================================================================
      */
-    const ENCRYPTED_SOURCE_PAYLOAD = "37989f168cf24017bd3d1b1f430e0316a5b7a717be21fc9b1459a55f469f24810ee3c600d050d3d0f91eb706921c55642ae2c3b8d6434223a528388c9ab36b7ff92b3d0b170d77d9845b2007dcdd0b544dc652f7d1b376eaf54e17519862d308217234bf08cdb4e546a96ca5e3ff";
-    // Автономне криптографічне ядро SHA-256
     function sha256Hex(ascii) {
       function rotr(n, x) { return (x >>> n) | (x << (32 - n)); }
       const K = [
@@ -1410,8 +1688,8 @@
       }
       return hex;
     }
-    // Дешифрування SHA-256 CTR (Counter Mode Keystream)
     function decryptSourcePayload(cipherHex) {
+      if (!cipherHex || cipherHex.length % 2 !== 0) return '';
       const cipherBytes = [];
       for (let i = 0; i < cipherHex.length; i += 2) {
         cipherBytes.push(parseInt(cipherHex.substr(i, 2), 16));
@@ -1425,33 +1703,51 @@
       }
       return plainBytes.map(b => String.fromCharCode(b)).join('');
     }
-    // Шифрування SHA-256 CTR (для використання майбутнім генератором)
-    function encryptSourcePayload(plainText) {
-      const binStr = unescape(encodeURIComponent(plainText));
-      const hexParts = [];
-      for (let i = 0; i < binStr.length; i++) {
-        const blockIndex = Math.floor(i / 32);
-        const keyHash = sha256Hex(String(blockIndex));
-        const keyByte = parseInt(keyHash.substr((i % 32) * 2, 2), 16);
-        const cipherByte = binStr.charCodeAt(i) ^ keyByte;
-        hexParts.push((cipherByte < 16 ? '0' : '') + cipherByte.toString(16));
+    const _AS_VAULT = [
+  "867f13b8eef5681f9e0b0d4a401865a8845e3810fda927604dda5781",
+  "37989f168cf24017aa310a051d1d421eadb4a555b860f2db0a06ba5b",
+  "f89472dcb8782520805bce541b491fd501c68cb80dbd69eebbb786ce",
+  "4489389a44f59d32b4528582ff13b603922b4c610ec695acec1f5318"
+];
+const _AS_INDEX = [1, 3, 0, 2];
+const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).join(''));
+    function _k(hex) {
+      let str = '';
+      for (let i = 0; i < hex.length; i += 2) {
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ 0x7b);
       }
-      return hexParts.join('');
+      return str;
     }
-    // Експорт криптографічних методів для генератора
-    window.SourceVault = {
-      encrypt: encryptSourcePayload,
-      decrypt: decryptSourcePayload
-    };
-    // Розшифрування робочих ендпоінтів у пам'яті
-    const JSON_FETCH_URL = decryptSourcePayload(ENCRYPTED_SOURCE_PAYLOAD);
-    const HTML_FETCH_URL = JSON_FETCH_URL.replace(/out:json/i, 'out:html');
-    // Стан застосунку: сортування від найновіших за замовчуванням
+    const _ytHost1 = _k("02140e0f0e191e55181416"); // youtube.com
+    const _ytHost2 = _k("02140e0f0e55191e");       // youtu.be
+    function _getThumb(vid) {
+      if (!vid) return '';
+      return _k("130f0f0b0841545412161c5502140e0f0e191e55181416540d1254") + vid + _k("54130a1f1e1d1a0e170f55110b1c");
+    }
+    function _getFallbackThumb(vid) {
+      if (!vid) return '';
+      return _k("130f0f0b0841545412161c5502140e0f0e191e55181416540d1254") + vid + _k("54160a1f1e1d1a0e170f55110b1c");
+    }
+    // Стан застосунку
     let allNewsItems = [];
     let searchTerm = '';
     let sortKey = 'date-desc';
     let selectedMonth = 'all';
+    // Змінні плеєра
+    let activeYtPlayer = null;
+    let ytTrackerTimer = null;
+    let isUserSeeking = false;
     // DOM елементи
+    const authGateTop = document.getElementById('authGateTop');
+    const authLogin = document.getElementById('authLogin');
+    const authPass = document.getElementById('authPass');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authErrorMsg = document.getElementById('authErrorMsg');
+    const headerSearchBox = document.getElementById('headerSearchBox');
+    const sessionHeaderBadge = document.getElementById('sessionHeaderBadge');
+    const sessionUserLabel = document.getElementById('sessionUserLabel');
+    const portalLockNotice = document.getElementById('portalLockNotice');
+    const controlsCard = document.getElementById('controlsCard');
     const mainSearchInput = document.getElementById('mainSearchInput');
     const floatingSearchInput = document.getElementById('floatingSearchInput');
     const sortSelect = document.getElementById('sortSelect');
@@ -1461,159 +1757,119 @@
     const newsGrid = document.getElementById('newsGrid');
     const backToTopBtn = document.getElementById('backToTopBtn');
     const floatingControls = document.getElementById('floatingControls');
-    const retryFetchBtn = document.getElementById('retryFetchBtn');
     const modalOverlay = document.getElementById('modalOverlay');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const modalTarget = document.getElementById('modalTarget');
+    const ukrNominativeMonths = [
+      "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+      "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
+    ];
     document.addEventListener('DOMContentLoaded', () => {
-      fetchSheetData();
       initUIListeners();
       lucide.createIcons();
     });
     /**
-     * Покроковий парсер кожного Rich Text фрагмента (Run) із таблиці з підтримкою комбінованих стилів
+     * АВТОРИЗАЦІЯ ТА ОДНОРАЗОВЕ ОТРИМАННЯ ДАНИХ ЧЕРЕЗ APPS SCRIPT
      */
-    function parseCellToRichHtml(cellElement, cssStyleMap) {
-      if (!cellElement) return '';
-      let result = '';
-      function walk(node, inheritedBold = false, inheritedItalic = false) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.textContent;
-          if (!text) return;
-          let formatted = escapeHtml(text);
-          if (inheritedBold && inheritedItalic) {
-            formatted = `<strong><em>${formatted}</em></strong>`;
-          } else if (inheritedBold) {
-            formatted = `<strong>${formatted}</strong>`;
-          } else if (inheritedItalic) {
-            formatted = `<em>${formatted}</em>`;
-          }
-          result += formatted;
-          return;
-        }
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          const tag = node.tagName.toLowerCase();
-          if (tag === 'br') {
-            result += '\n';
-            return;
-          }
-          let isBold = inheritedBold;
-          let isItalic = inheritedItalic;
-          if (tag === 'b' || tag === 'strong') isBold = true;
-          if (tag === 'i' || tag === 'em') isItalic = true;
-          const inlineStyle = (node.getAttribute('style') || '').toLowerCase();
-          if (/font-weight\s*:\s*(bold|[789]00)/.test(inlineStyle)) isBold = true;
-          if (/font-style\s*:\s*italic/.test(inlineStyle)) isItalic = true;
-          const classList = node.classList || [];
-          classList.forEach(cls => {
-            if (cssStyleMap && cssStyleMap[cls]) {
-              if (cssStyleMap[cls].isBold) isBold = true;
-              if (cssStyleMap[cls].isItalic) isItalic = true;
-            }
-          });
-          node.childNodes.forEach(child => {
-            walk(child, isBold, isItalic);
-          });
-          if (tag === 'div' || tag === 'p') {
-            result += '\n';
-          }
-        }
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const login = authLogin.value.trim();
+      const pass = authPass.value;
+      if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_SHARD")) {
+        showAuthError("Помилка: вставте згенерований блок із tool.html у код сайту!");
+        return;
       }
-      walk(cellElement, false, false);
-      return result;
-    }
-    /**
-     * Отримання медіа та вихідного Rich Text форматування з HTML-представлення Google Таблиці
-     */
-    async function fetchSheetHtmlAssets() {
+      if (!login || !pass) {
+        showAuthError("Заповніть логін і пароль!");
+        return;
+      }
+      authSubmitBtn.disabled = true;
+      authSubmitBtn.innerHTML = `<span>Вхід...</span><div class="spinner" style="width:14px;height:14px;margin:0;border-width:2px;"></div>`;
+      authErrorMsg.style.display = 'none';
       try {
-        const res = await fetch(HTML_FETCH_URL);
-        if (!res.ok) return { images: {}, richTexts: {} };
-        const htmlText = await res.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
-        const table = doc.querySelector('table');
-        if (!table) return { images: {}, richTexts: {} };
-        const cssStyleMap = {};
-        doc.querySelectorAll('style').forEach(st => {
-          const css = st.textContent || '';
-          const ruleRegex = /\.([a-zA-Z0-9_-]+)\s*\{([^}]+)\}/g;
-          let m;
-          while ((m = ruleRegex.exec(css)) !== null) {
-            const cls = m[1];
-            const rules = m[2].toLowerCase();
-            const isBold = /font-weight\s*:\s*(bold|[789]00)/.test(rules);
-            const isItalic = /font-style\s*:\s*italic/.test(rules);
-            cssStyleMap[cls] = { isBold, isItalic };
-          }
+        const response = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ login: login, password: pass })
         });
-        const rows = Array.from(table.querySelectorAll('tr'));
-        let imgColIdx = 6;
-        let fullTextColIdx = 5;
-        let headerRowFound = -1;
-        for (let r = 0; r < Math.min(5, rows.length); r++) {
-          const cells = Array.from(rows[r].querySelectorAll('th, td')).map(c => c.innerText.trim().toLowerCase());
-          const fImgIdx = cells.findIndex(t => t.includes('зображення') || t.includes('фото') || t.includes('image'));
-          if (fImgIdx !== -1) imgColIdx = fImgIdx;
-          const fTextIdx = cells.findIndex(t => t.includes('повний текст') || (t.includes('текст') && !t.includes('короткий')));
-          if (fTextIdx !== -1) fullTextColIdx = fTextIdx;
-          if (fImgIdx !== -1 || fTextIdx !== -1) {
-            headerRowFound = r;
-            break;
-          }
+        const data = await response.json();
+        authSubmitBtn.disabled = false;
+        authSubmitBtn.innerHTML = `<span>Увійти</span><i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>`;
+        lucide.createIcons();
+        if (data && data.success) {
+          // Успішна авторизація: перемикаємо стан сторінки
+          document.body.classList.add('logged-in');
+          authGateTop.style.display = 'none';
+          portalLockNotice.style.display = 'none';
+          headerSearchBox.style.display = 'block';
+          sessionHeaderBadge.style.display = 'flex';
+          controlsCard.style.display = 'flex';
+          newsGrid.style.display = 'flex';
+          sessionUserLabel.innerText = `${login}`;
+          // Сесійно наповнюємо стрічку
+          ingestBackendItems(data.items || []);
+          updateMonthDropdown(allNewsItems);
+          updateAppUI();
+        } else {
+          showAuthError(data.message || "Невірний логін або пароль!");
         }
-        const startRow = headerRowFound !== -1 ? headerRowFound + 1 : 1;
-        const images = {};
-        const richTexts = {};
-        for (let r = startRow; r < rows.length; r++) {
-          const cells = rows[r].querySelectorAll('td');
-          const offset = r - startRow;
-          if (cells.length > imgColIdx) {
-            const imgTag = cells[imgColIdx].querySelector('img');
-            if (imgTag && imgTag.src) {
-              images[offset] = imgTag.src;
-            }
-          }
-          if (cells.length > fullTextColIdx) {
-            const textCell = cells[fullTextColIdx];
-            const parsedRichHtml = parseCellToRichHtml(textCell, cssStyleMap);
-            if (parsedRichHtml) {
-              richTexts[offset] = parsedRichHtml;
-            }
-          }
-        }
-        return { images, richTexts };
-      } catch (e) {
-        console.warn("Не вдалося завантажити HTML-ассети:", e);
-        return { images: {}, richTexts: {} };
+      } catch (err) {
+        authSubmitBtn.disabled = false;
+        authSubmitBtn.innerHTML = `<span>Увійти</span><i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>`;
+        lucide.createIcons();
+        showAuthError("Помилка зв'язку із сервером Apps Script!");
       }
     }
+    function showAuthError(text) {
+      authErrorMsg.innerText = text;
+      authErrorMsg.style.display = 'block';
+    }
+    function handleLogout() {
+      document.body.classList.remove('logged-in');
+      allNewsItems = [];
+      newsGrid.innerHTML = '';
+      newsGrid.style.display = 'none';
+      controlsCard.style.display = 'none';
+      headerSearchBox.style.display = 'none';
+      sessionHeaderBadge.style.display = 'none';
+      floatingControls.classList.remove('visible');
+      authPass.value = '';
+      authLogin.value = '';
+      authGateTop.style.display = 'flex';
+      portalLockNotice.style.display = 'flex';
+      lucide.createIcons();
+    }
     /**
-     * Головне завантаження даних
+     * СТРУКТУРУВАННЯ МАТЕРІАЛІВ ІЗ СЕСІЙНОГО ПАКЕТА
      */
-    async function fetchSheetData() {
-      showLoading(true);
-      try {
-        const [jsonRes, htmlAssets] = await Promise.all([
-          fetch(JSON_FETCH_URL).then(r => {
-            if (!r.ok) throw new Error("Помилка мережі Google Sheets");
-            return r.text();
-          }),
-          fetchSheetHtmlAssets()
-        ]);
-        const rawData = jsonRes.substring(jsonRes.indexOf('({') + 1, jsonRes.lastIndexOf('})') + 1);
-        const parsedJson = JSON.parse(rawData);
-        if (!parsedJson.table || !parsedJson.table.rows) {
-          throw new Error("Некоректна відповідь Google Sheets");
+    function ingestBackendItems(items) {
+      allNewsItems = [];
+      items.forEach((item, index) => {
+        const rawDate = item.rawDate || item.date || "";
+        const date = formatDateToUkrainian(rawDate);
+        const dateObj = parseDateString(rawDate || date);
+        let monthKey = "";
+        let monthLabel = "";
+        if (dateObj.getTime() > 0) {
+          const y = dateObj.getFullYear();
+          const m = dateObj.getMonth();
+          monthKey = `${y}-${String(m + 1).padStart(2, '0')}`;
+          monthLabel = `${ukrNominativeMonths[m]} ${y}`;
         }
-        processTableData(parsedJson.table, htmlAssets);
-        showLoading(false);
-        updateAppUI();
-      } catch (err) {
-        console.error(err);
-        showLoading(false);
-        showError(true);
-      }
+        allNewsItems.push({
+          id: String(item.id || index + 1),
+          sheetRow: item.sheetRow || index + 1,
+          date: date || "—",
+          rawDate: rawDate,
+          dateObj: dateObj,
+          monthKey: monthKey,
+          monthLabel: monthLabel,
+          title: item.title || "Матеріал проєкту",
+          lead: item.lead || "",
+          fullText: item.fullText || "",
+          youtubeId: item.youtubeId || ""
+        });
+      });
     }
     function convertToUkr(day, month, year) {
       const ukrMonths = [
@@ -1628,15 +1884,6 @@
     function formatDateToUkrainian(dateStr) {
       if (!dateStr || dateStr === "—" || dateStr.trim() === "") return "—";
       let cleanStr = String(dateStr).trim();
-      if (cleanStr.startsWith("Date(") && cleanStr.endsWith(")")) {
-        try {
-          const parts = cleanStr.slice(5, -1).split(',');
-          const year = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) + 1;
-          const day = parseInt(parts[2], 10);
-          return convertToUkr(day, month, year);
-        } catch (e) {}
-      }
       const dmyRegex = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})$/;
       const matchDmy = cleanStr.match(dmyRegex);
       if (matchDmy) {
@@ -1644,14 +1891,6 @@
         let month = parseInt(matchDmy[2], 10);
         let year = parseInt(matchDmy[3], 10);
         if (year < 100) year += 2000;
-        return convertToUkr(day, month, year);
-      }
-      const ymdRegex = /^(\d{4})[./-](\d{1,2})[./-](\d{1,2})$/;
-      const matchYmd = cleanStr.match(ymdRegex);
-      if (matchYmd) {
-        let year = parseInt(matchYmd[1], 10);
-        let month = parseInt(matchYmd[2], 10);
-        let day = parseInt(matchYmd[3], 10);
         return convertToUkr(day, month, year);
       }
       return dateStr;
@@ -1668,12 +1907,6 @@
     function parseDateString(dateStr) {
       if (!dateStr || dateStr === "—") return new Date(0);
       let cleanStr = String(dateStr).trim();
-      if (cleanStr.startsWith("Date(") && cleanStr.endsWith(")")) {
-        try {
-          const parts = cleanStr.slice(5, -1).split(',');
-          return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10), parseInt(parts[2], 10));
-        } catch (e) {}
-      }
       const ukrMonths = [
         "січня", "лютого", "березня", "квітня", "травня", "червня",
         "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"
@@ -1694,10 +1927,6 @@
         const month = parseInt(partsDot[1], 10) - 1;
         const year = parseInt(partsDot[2], 10);
         return new Date(year, month, day);
-      }
-      const partsDash = cleanStr.split('-');
-      if (partsDash.length === 3 && partsDash[0].length === 4) {
-        return new Date(parseInt(partsDash[0], 10), parseInt(partsDash[1], 10) - 1, parseInt(partsDash[2], 10));
       }
       const parsed = new Date(cleanStr);
       return isNaN(parsed.getTime()) ? new Date(0) : parsed;
@@ -1765,11 +1994,10 @@
         if (!trimmed) return;
         const isBullet = /^[🔹🔷•\-\*▪️]\s*(.+)/.test(trimmed);
         if (isBullet) {
-          const formattedLine = processInlineFormatting(trimmed);
-          html += `<div class="article-list-item">${formattedLine}</div>`;
+          html += `<div class="article-list-item">${processInlineFormatting(trimmed)}</div>`;
           return;
         }
-        const isAuthorByline = /^підготував|^підготувала|^автор|^фото/i.test(trimmed) && trimmed.length < 130;
+        const isAuthorByline = /^підготував|^підготувала|^автор/i.test(trimmed) && trimmed.length < 130;
         if (isAuthorByline) {
           let bylineFormatted = processInlineFormatting(trimmed);
           bylineFormatted = bylineFormatted.replace(/<\/?(strong|b|em|i)>/gi, '');
@@ -1793,202 +2021,6 @@
       });
       return html;
     }
-    function extractImageUrl(rawImage) {
-      if (!rawImage || typeof rawImage !== 'string') return '';
-      let str = rawImage.trim();
-      const formulaMatch = str.match(/=IMAGE\s*\(\s*["']([^"']+)["']/i);
-      if (formulaMatch) {
-        str = formulaMatch[1];
-      }
-      const urlMatch = str.match(/(https?:\/\/[^\s"'<>]+)/);
-      if (urlMatch) {
-        str = urlMatch[1];
-      }
-      if (str.includes('drive.google.com')) {
-        const fileIdMatch = str.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-        if (fileIdMatch && fileIdMatch[1]) {
-          return `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w1200`;
-        }
-      }
-      if (str.startsWith('http://') && (str.includes('google') || str.includes('ibb.co') || str.includes('imgur') || str.includes('knu.ua'))) {
-        str = str.replace('http://', 'https://');
-      }
-      return str.startsWith('http') ? str : '';
-    }
-    function extractUrlAndTitle(rawLink) {
-      let url = "";
-      let mediaTitle = "";
-      if (!rawLink || typeof rawLink !== 'string') return { url, mediaTitle };
-      const cleanLink = rawLink.trim();
-      const urlMatch = cleanLink.match(/(https?:\/\/[^\s]+)/);
-      if (urlMatch) {
-        url = urlMatch[1];
-        let openCount = (url.match(/\(/g) || []).length;
-        let closeCount = (url.match(/\)/g) || []).length;
-        while (closeCount > openCount && url.endsWith(')')) {
-          url = url.slice(0, -1);
-          closeCount--;
-        }
-        const remnant = cleanLink.replace(url, '').trim();
-        if (remnant) {
-          const titleMatch = remnant.match(/^\(([^)]+)\)$/) || remnant.match(/\(([^)]+)\)/);
-          mediaTitle = titleMatch ? titleMatch[1] : remnant;
-        }
-      } else if (cleanLink.startsWith('http://') || cleanLink.startsWith('https://')) {
-        url = cleanLink;
-      }
-      if (url && !mediaTitle) {
-        try {
-          mediaTitle = new URL(url).hostname.replace('www.', '');
-        } catch (e) {
-          mediaTitle = "Джерело";
-        }
-      }
-      return { url, mediaTitle };
-    }
-    /**
-     * Повна ізоляція: Лід (lead) та Повний текст (fullText) суворо розділені
-     */
-    function processTableData(jsonTable, htmlAssets = { images: {}, richTexts: {} }) {
-      const rows = jsonTable.rows || [];
-      if (rows.length === 0) return;
-      const cols = jsonTable.cols || [];
-      const colLabels = cols.map(c => c && c.label ? String(c.label).trim() : "");
-      const colsHaveHeaders = colLabels.some(l => {
-        const s = l.toLowerCase();
-        return s.includes('заголовок') || s.includes('лід') || s.includes('повний текст') || s.includes('зображення');
-      });
-      let headerSource = colLabels;
-      let dataRowsStartIndex = 0;
-      if (!colsHaveHeaders) {
-        for (let r = 0; r < Math.min(6, rows.length); r++) {
-          const row = rows[r];
-          if (!row || !row.c) continue;
-          const rowTexts = row.c.map(cell => cell && cell.v !== null && cell.v !== undefined ? String(cell.v).trim().toLowerCase() : '');
-          if (rowTexts.some(t => t.includes('заголовок') || t.includes('лід') || t.includes('повний текст') || t.includes('зображення'))) {
-            headerSource = row.c.map(cell => cell && cell.v !== null && cell.v !== undefined ? String(cell.v).trim() : '');
-            dataRowsStartIndex = r + 1;
-            break;
-          }
-        }
-      }
-      let idxId = -1;
-      let idxDate = -1;
-      let idxTitle = -1;
-      let idxLead = -1;
-      let idxFullText = -1;
-      let idxImage = -1;
-      let idxLink = -1;
-      headerSource.forEach((h, index) => {
-        const hLower = h.toLowerCase().trim();
-        if (hLower.includes('№') || hLower.includes('id') || hLower === 'n') {
-          idxId = index;
-        } else if (hLower.includes('внесено') || hLower.includes('дата') || hLower.includes('date')) {
-          idxDate = index;
-        } else if (hLower.includes('заголовок') || hLower.includes('title') || hLower === 'назва') {
-          idxTitle = index;
-        } else if (hLower === 'лід' || hLower.includes('lead') || hLower.includes('короткий опис') || hLower.includes('анонс')) {
-          idxLead = index;
-        } else if (hLower.includes('повний текст') || (hLower.includes('текст новини') && !hLower.includes('короткий'))) {
-          idxFullText = index;
-        } else if (hLower.includes('зображення') || hLower.includes('фото') || hLower.includes('image')) {
-          idxImage = index;
-        } else if (hLower.includes('посилання') || hLower.includes('link') || hLower.includes('url')) {
-          idxLink = index;
-        }
-      });
-      if (idxId === -1) idxId = 1;
-      if (idxDate === -1) idxDate = 2;
-      if (idxTitle === -1) idxTitle = 3;
-      if (idxLead === -1) idxLead = 4;
-      if (idxFullText === -1) idxFullText = 5;
-      if (idxImage === -1) idxImage = 6;
-      if (idxLink === -1) idxLink = 7;
-      allNewsItems = [];
-      const ukrNominativeMonths = [
-        "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-        "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
-      ];
-      for (let i = dataRowsStartIndex; i < rows.length; i++) {
-        const r = rows[i];
-        if (!r || !r.c) continue;
-        const getVal = (idx) => {
-          if (idx < 0 || idx >= r.c.length) return "";
-          const cell = r.c[idx];
-          if (!cell) return "";
-          if (cell.v !== null && cell.v !== undefined && String(cell.v).trim() !== "") {
-            return String(cell.v).trim();
-          }
-          if (cell.f !== null && cell.f !== undefined) {
-            return String(cell.f).trim();
-          }
-          return "";
-        };
-        const id = getVal(idxId);
-        const rawDate = getVal(idxDate);
-        const date = formatDateToUkrainian(rawDate);
-        const rawTitle = getVal(idxTitle);
-        const rawLead = getVal(idxLead);
-        const rawImage = getVal(idxImage);
-        const rawLink = getVal(idxLink);
-        const dataRowOffset = i - dataRowsStartIndex;
-        const rawFullText = (htmlAssets.richTexts && htmlAssets.richTexts[dataRowOffset]) 
-          ? htmlAssets.richTexts[dataRowOffset] 
-          : getVal(idxFullText);
-        if (!rawTitle && !rawLead && !rawFullText && !rawImage && !rawLink && !id) continue;
-        const title = rawTitle || "Новина проєкту";
-        const lead = rawLead; 
-        const fullText = rawFullText;
-        let imageUrl = extractImageUrl(rawImage);
-        if (!imageUrl && htmlAssets.images && htmlAssets.images[dataRowOffset]) {
-          imageUrl = extractImageUrl(htmlAssets.images[dataRowOffset]);
-        }
-        const { url, mediaTitle } = extractUrlAndTitle(rawLink);
-        let youtubeId = "";
-        if (url && (url.includes("youtube.com") || url.includes("youtu.be"))) {
-          const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\s]{11})/;
-          const match = url.match(ytRegex);
-          if (match) youtubeId = match[1];
-        }
-        const dateObj = parseDateString(rawDate || date);
-        let monthKey = "";
-        let monthLabel = "";
-        if (dateObj.getTime() > 0) {
-          const y = dateObj.getFullYear();
-          const m = dateObj.getMonth();
-          monthKey = `${y}-${String(m + 1).padStart(2, '0')}`;
-          monthLabel = `${ukrNominativeMonths[m]} ${y}`;
-        }
-        allNewsItems.push({
-          id: id || String(allNewsItems.length + 1),
-          sheetRow: i + 1,
-          date: date || "—",
-          rawDate: rawDate,
-          dateObj: dateObj,
-          monthKey: monthKey,
-          monthLabel: monthLabel,
-          title: title,
-          lead: lead,
-          fullText: fullText,
-          imageUrl: imageUrl,
-          rawLink: rawLink,
-          url: url,
-          mediaTitle: mediaTitle,
-          youtubeId: youtubeId
-        });
-      }
-      updateMonthDropdown(allNewsItems);
-    }
-    function showLoading(active) {
-      loadingState.style.display = active ? 'flex' : 'none';
-      if (active) {
-        newsGrid.innerHTML = '';
-        errorState.style.display = 'none';
-      }
-    }
-    function showError(active) {
-      errorState.style.display = active ? 'flex' : 'none';
-    }
     function initUIListeners() {
       mainSearchInput.addEventListener('input', (e) => {
         searchTerm = e.target.value;
@@ -2008,15 +2040,12 @@
         selectedMonth = e.target.value;
         updateAppUI();
       });
-      retryFetchBtn.addEventListener('click', () => {
-        location.reload();
-      });
       window.addEventListener('scroll', () => {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         const scrolled = (winScroll / height) * 100;
         document.getElementById('progress-bar').style.width = scrolled + '%';
-        if (winScroll > 250) {
+        if (winScroll > 250 && allNewsItems.length > 0) {
           floatingControls.classList.add('visible');
         } else {
           floatingControls.classList.remove('visible');
@@ -2033,27 +2062,20 @@
         if (e.key === 'Escape') closeModal();
       });
     }
-    /**
-     * Сортування від найновіших до найстаріших та фільтр за місяцем
-     */
     function getProcessedDataset() {
       let data = [...allNewsItems];
-      // Текстовий пошук
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         data = data.filter(item => {
           return item.title.toLowerCase().includes(term) ||
             item.lead.toLowerCase().includes(term) ||
             item.fullText.toLowerCase().includes(term) ||
-            item.date.toLowerCase().includes(term) ||
-            item.mediaTitle.toLowerCase().includes(term);
+            item.date.toLowerCase().includes(term);
         });
       }
-      // Ізоляція за місяцем
       if (selectedMonth && selectedMonth !== 'all') {
         data = data.filter(item => item.monthKey === selectedMonth);
       }
-      // Сортування (date-desc: найновіші спочатку)
       if (sortKey === 'date-desc') {
         data.sort((a, b) => {
           const timeA = a.dateObj ? a.dateObj.getTime() : 0;
@@ -2097,8 +2119,8 @@
         newsGrid.innerHTML = `
           <div class="no-results" style="width: 100%;">
             <i data-lucide="search-slash" style="width: 44px; height: 44px; opacity: 0.5; margin-bottom: 12px; color: #E2E8F0;"></i>
-            <h3 style="color: #FFFFFF;">Новин не знайдено</h3>
-            <p style="color: #E2E8F0;">Спробуйте обрати інший місяць або змінити пошуковий запит.</p>
+            <h3 style="color: #0B1F3A;">Новин не знайдено</h3>
+            <p style="color: #44546A;">Спробуйте обрати інший місяць або змінити пошуковий запит.</p>
           </div>
         `;
         lucide.createIcons();
@@ -2107,62 +2129,29 @@
       renderNewsFeed(activeData);
       lucide.createIcons();
     }
-    function playYoutubeInline(videoId, containerId) {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      container.innerHTML = `
-        <div class="iframe-wrapper">
-          <iframe 
-            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-          </iframe>
-        </div>
-      `;
-    }
-    /**
-     * Рендеринг вертикальної стрічки новин
-     */
     function renderNewsFeed(items) {
       newsGrid.innerHTML = '';
       items.forEach(item => {
         let mediaLeftHtml = '';
-        const hasVideo = Boolean(item.youtubeId);
-        const hasImage = Boolean(item.imageUrl);
-        if (hasVideo) {
+        if (item.youtubeId) {
+          const thumbUrl = _getThumb(item.youtubeId);
+          const fallbackThumbUrl = _getFallbackThumb(item.youtubeId);
           mediaLeftHtml = `
             <div class="news-card-media-wrap has-video">
               <div class="news-media-thumb-container">
                 <img 
-                  src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" 
+                  src="${thumbUrl}" 
                   alt="${escapeHtml(item.title)}" 
                   loading="lazy" 
                   decoding="async"
                   class="news-card-thumb-img" 
+                  onerror="this.src='${fallbackThumbUrl}'"
                 >
                 <div class="media-video-overlay">
-                  <div class="media-play-pill">
-                    <i data-lucide="play" style="width: 20px; height: 20px; margin-left: 2px;"></i>
+                  <div class="media-play-pill" title="Дивитися">
+                    <i data-lucide="play" style="width: 22px; height: 22px; margin-left: 2px;"></i>
                   </div>
                 </div>
-                ${item.mediaTitle ? `<span class="media-caption-badge">${escapeHtml(item.mediaTitle)}</span>` : ''}
-              </div>
-            </div>
-          `;
-        } else if (hasImage) {
-          mediaLeftHtml = `
-            <div class="news-card-media-wrap">
-              <div class="news-media-thumb-container">
-                <img 
-                  src="${item.imageUrl}" 
-                  alt="${escapeHtml(item.title)}" 
-                  loading="lazy" 
-                  decoding="async"
-                  referrerpolicy="no-referrer"
-                  class="news-card-thumb-img" 
-                  onerror="this.closest('.news-card-media-wrap').style.display='none'"
-                >
               </div>
             </div>
           `;
@@ -2174,10 +2163,6 @@
             <div class="news-card-body-wrap">
               <div>
                 <div class="news-card-meta-top">
-                  <span class="badge">
-                    <i data-lucide="bookmark" style="width: 11px; height: 11px;"></i>
-                    #FAO_KNU
-                  </span>
                   <span class="news-card-meta-text">№ ${item.id} • ${item.date}</span>
                 </div>
                 <h2 class="news-card-title">${escapeHtml(item.title)}</h2>
@@ -2186,7 +2171,7 @@
               </div>
               <div class="news-card-footer">
                 <span class="read-more-btn">
-                  <span>Читати повністю</span>
+                  <span>Читати та дивитися</span>
                   <i data-lucide="arrow-right"></i>
                 </span>
               </div>
@@ -2197,72 +2182,278 @@
       });
     }
     /**
-     * Відкриття повного матеріалу в модальному вікні
+     * ========================================================================
+     * РОБОТА ІЗ ЗАХИЩЕНИМ ВІДЕОПЛЕЄРОМ
+     * ========================================================================
+     */
+    function formatTimeSeconds(sec) {
+      if (isNaN(sec) || sec < 0) return "0:00";
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+    function createProtectedPlayer(videoId) {
+      if (activeYtPlayer) {
+        try { activeYtPlayer.destroy(); } catch (e) {}
+        activeYtPlayer = null;
+      }
+      if (ytTrackerTimer) {
+        clearInterval(ytTrackerTimer);
+        ytTrackerTimer = null;
+      }
+      function instantiate() {
+        activeYtPlayer = new YT.Player('ytPlayerHost', {
+          videoId: videoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            modestbranding: 1,
+            rel: 0,
+            iv_load_policy: 3,
+            playsinline: 1,
+            enablejsapi: 1,
+            origin: window.location.origin || undefined
+          },
+          events: {
+            onReady: onProtectedPlayerReady,
+            onStateChange: onProtectedPlayerStateChange
+          }
+        });
+      }
+      if (window.YT && window.YT.Player) {
+        instantiate();
+      } else {
+        window.onYouTubeIframeAPIReady = instantiate;
+      }
+    }
+    function onProtectedPlayerReady(e) {
+      const player = e.target;
+      const dur = player.getDuration() || 0;
+      const seekInput = document.getElementById('cpSeekInput');
+      if (seekInput) {
+        seekInput.max = dur > 0 ? dur : 100;
+        seekInput.value = 0;
+      }
+      updatePlayerTimeLabels(0, dur);
+      bindPlayerControlListeners(player);
+    }
+    function onProtectedPlayerStateChange(e) {
+      const state = e.data;
+      const playIcon = document.getElementById('cpPlayIcon');
+      const centerBadge = document.getElementById('videoCenterBadge');
+      const player = activeYtPlayer;
+      if (state === YT.PlayerState.PLAYING) {
+        if (centerBadge) centerBadge.classList.add('hidden');
+        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
+        lucide.createIcons();
+        startPlayerTracker();
+      } else if (state === YT.PlayerState.PAUSED || state === YT.PlayerState.ENDED) {
+        if (centerBadge) centerBadge.classList.remove('hidden');
+        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+        lucide.createIcons();
+        stopPlayerTracker();
+        if (state === YT.PlayerState.ENDED && player) {
+          const seekInput = document.getElementById('cpSeekInput');
+          const progressPlayed = document.getElementById('cpProgressPlayed');
+          if (seekInput) seekInput.value = seekInput.max;
+          if (progressPlayed) progressPlayed.style.width = '100%';
+        }
+      }
+    }
+    function startPlayerTracker() {
+      stopPlayerTracker();
+      ytTrackerTimer = setInterval(() => {
+        if (!activeYtPlayer || isUserSeeking) return;
+        try {
+          const cur = activeYtPlayer.getCurrentTime() || 0;
+          const dur = activeYtPlayer.getDuration() || 0;
+          const frac = activeYtPlayer.getVideoLoadedFraction() || 0;
+          updatePlayerTimeLabels(cur, dur);
+          const seekInput = document.getElementById('cpSeekInput');
+          const progressPlayed = document.getElementById('cpProgressPlayed');
+          const progressBuffer = document.getElementById('cpProgressBuffer');
+          if (seekInput && dur > 0) {
+            seekInput.value = cur;
+            const pct = (cur / dur) * 100;
+            if (progressPlayed) progressPlayed.style.width = `${pct}%`;
+          }
+          if (progressBuffer) {
+            progressBuffer.style.width = `${frac * 100}%`;
+          }
+        } catch (err) {}
+      }, 250);
+    }
+    function stopPlayerTracker() {
+      if (ytTrackerTimer) {
+        clearInterval(ytTrackerTimer);
+        ytTrackerTimer = null;
+      }
+    }
+    function updatePlayerTimeLabels(cur, dur) {
+      const timeElem = document.getElementById('cpTime');
+      if (timeElem) {
+        timeElem.innerText = `${formatTimeSeconds(cur)} / ${formatTimeSeconds(dur)}`;
+      }
+    }
+    function bindPlayerControlListeners(player) {
+      const shield = document.getElementById('videoShieldOverlay');
+      const playBtn = document.getElementById('cpPlayBtn');
+      const seekInput = document.getElementById('cpSeekInput');
+      const muteBtn = document.getElementById('cpMuteBtn');
+      const volInput = document.getElementById('cpVolumeInput');
+      const fsBtn = document.getElementById('cpFullscreenBtn');
+      const wrap = document.getElementById('modalVideoWrap');
+      function togglePlayback() {
+        if (!player) return;
+        const state = player.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+        } else {
+          player.playVideo();
+        }
+      }
+      function toggleFullscreen() {
+        if (!wrap) return;
+        if (!document.fullscreenElement) {
+          if (wrap.requestFullscreen) wrap.requestFullscreen();
+          else if (wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+      }
+      if (shield) {
+        shield.onclick = togglePlayback;
+        shield.ondblclick = toggleFullscreen;
+        shield.oncontextmenu = (e) => { e.preventDefault(); return false; };
+      }
+      if (playBtn) playBtn.onclick = togglePlayback;
+      if (seekInput) {
+        seekInput.oninput = (e) => {
+          isUserSeeking = true;
+          const val = parseFloat(e.target.value);
+          const dur = player.getDuration() || 0;
+          updatePlayerTimeLabels(val, dur);
+          const progressPlayed = document.getElementById('cpProgressPlayed');
+          if (progressPlayed && dur > 0) {
+            progressPlayed.style.width = `${(val / dur) * 100}%`;
+          }
+        };
+        seekInput.onchange = (e) => {
+          const val = parseFloat(e.target.value);
+          player.seekTo(val, true);
+          isUserSeeking = false;
+        };
+      }
+      if (muteBtn) {
+        muteBtn.onclick = () => {
+          const volIcon = document.getElementById('cpVolumeIcon');
+          if (player.isMuted()) {
+            player.unMute();
+            const curVol = player.getVolume();
+            if (volInput) volInput.value = curVol;
+            if (volIcon) volIcon.setAttribute('data-lucide', curVol > 50 ? 'volume-2' : (curVol > 0 ? 'volume-1' : 'volume-x'));
+          } else {
+            player.mute();
+            if (volInput) volInput.value = 0;
+            if (volIcon) volIcon.setAttribute('data-lucide', 'volume-x');
+          }
+          lucide.createIcons();
+        };
+      }
+      if (volInput) {
+        volInput.oninput = (e) => {
+          const val = parseInt(e.target.value, 10);
+          if (player.isMuted() && val > 0) player.unMute();
+          player.setVolume(val);
+          const volIcon = document.getElementById('cpVolumeIcon');
+          if (volIcon) {
+            volIcon.setAttribute('data-lucide', val === 0 ? 'volume-x' : (val < 50 ? 'volume-1' : 'volume-2'));
+            lucide.createIcons();
+          }
+        };
+      }
+      if (fsBtn) fsBtn.onclick = toggleFullscreen;
+      document.onfullscreenchange = () => {
+        const fsIcon = document.getElementById('cpFullscreenIcon');
+        if (fsIcon) {
+          fsIcon.setAttribute('data-lucide', document.fullscreenElement ? 'minimize' : 'maximize');
+          lucide.createIcons();
+        }
+      };
+    }
+    /**
+     * ВІДКРИТТЯ ПОВНОГО МАТЕРІАЛУ ІЗ ЗАХИЩЕНИМ ПЛЕЄРОМ
      */
     function openModal(itemId) {
       const item = allNewsItems.find(i => i.id === itemId);
       if (!item) return;
-      const imageHtml = item.imageUrl ? `
-        <div class="modal-news-img-wrap">
-          <img 
-            src="${item.imageUrl}" 
-            alt="${escapeHtml(item.title)}" 
-            class="modal-news-img" 
-            decoding="async" 
-            referrerpolicy="no-referrer"
-          >
-        </div>
-      ` : '';
-      let mediaHtml = '';
+      let videoSectionHtml = '';
       if (item.youtubeId) {
-        mediaHtml = `
-          <div style="margin-top: 15px;">
-            <div class="iframe-wrapper">
-              <iframe 
-                src="https://www.youtube.com/embed/${item.youtubeId}?autoplay=0&rel=0" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-              </iframe>
+        videoSectionHtml = `
+          <div class="modal-video-wrap" id="modalVideoWrap" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+            <div class="video-viewport">
+              <div id="ytPlayerHost"></div>
+              <!-- Захисний шар: блокує кліки на назву, автора, Share, YouTube логотип та відкриття меню -->
+              <div class="video-shield-overlay" id="videoShieldOverlay" title="">
+                <div class="video-center-play-badge" id="videoCenterBadge">
+                  <i data-lucide="play" style="width: 28px; height: 28px; margin-left: 3px;"></i>
+                </div>
+              </div>
             </div>
-          </div>
-        `;
-      } else if (item.url) {
-        mediaHtml = `
-          <div style="margin-top: 15px;">
-            <a href="${item.url}" target="_blank" class="generic-link-preview" style="padding: 10px 14px;">
-              <div class="link-icon-container" style="width: 32px; height: 32px;">
-                <i data-lucide="external-link"></i>
+            <!-- Власна безпечна панель керування -->
+            <div class="custom-player-bar" id="customPlayerBar">
+              <button type="button" class="cp-btn" id="cpPlayBtn" title="Відтворити / Пауза">
+                <i data-lucide="play" id="cpPlayIcon" style="width: 18px; height: 18px;"></i>
+              </button>
+              <span class="cp-time" id="cpTime">0:00 / 0:00</span>
+              <div class="cp-progress-rail" id="cpProgressRail">
+                <div class="cp-progress-buffer" id="cpProgressBuffer"></div>
+                <div class="cp-progress-played" id="cpProgressPlayed"></div>
+                <input type="range" class="cp-seek-input" id="cpSeekInput" min="0" max="100" value="0" step="0.2" aria-label="Перемотка">
               </div>
-              <div class="link-details">
-                <span class="link-title" style="font-size: 0.85rem;">${item.mediaTitle || 'Першоджерело новини'}</span>
-                <span class="link-domain">${item.url}</span>
+              <div class="cp-volume-box">
+                <button type="button" class="cp-btn" id="cpMuteBtn" title="Вимкнути / Увімкнути звук">
+                  <i data-lucide="volume-2" id="cpVolumeIcon" style="width: 18px; height: 18px;"></i>
+                </button>
+                <input type="range" class="cp-volume-input" id="cpVolumeInput" min="0" max="100" value="100" aria-label="Гучність">
               </div>
-            </a>
+              <button type="button" class="cp-btn" id="cpFullscreenBtn" title="На весь екран">
+                <i data-lucide="maximize" id="cpFullscreenIcon" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
           </div>
         `;
       }
       const formattedArticleBody = item.fullText ? formatFullArticleText(item.fullText) : '';
       modalTarget.innerHTML = `
-        ${imageHtml}
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-          <span class="badge">#FAO_KNU</span>
+        ${videoSectionHtml}
+        <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 14px;">
           <div class="news-card-meta-text">
             <span>№ ${item.id} • ${item.date}</span>
           </div>
         </div>
         <h1 class="modal-title">${escapeHtml(item.title)}</h1>
-        <div class="news-card-divider" style="width: 45px; height: 4px; margin-bottom: 16px;"></div>
+        <div class="news-card-divider" style="width: 45px; height: 4px; margin-bottom: 18px;"></div>
         ${formattedArticleBody ? `<div class="modal-paragraphs-block">${formattedArticleBody}</div>` : ''}
-        ${mediaHtml}
       `;
       modalOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
       lucide.createIcons();
+      if (item.youtubeId) {
+        createProtectedPlayer(item.youtubeId);
+      }
     }
     function closeModal() {
       modalOverlay.classList.remove('active');
       document.body.style.overflow = '';
+      stopPlayerTracker();
+      if (activeYtPlayer) {
+        try { activeYtPlayer.destroy(); } catch (e) {}
+        activeYtPlayer = null;
+      }
       modalTarget.innerHTML = '';
     }
   </script>
