@@ -763,7 +763,7 @@
       background-color: #FFFFFF !important;
     }
     /* ==============================================================
-       КАСТОМНИЙ ВІДЕОПЛЕЄР ІЗ ЗАХИСТОМ ТА ПІДТРИМКОЮ ПРОПУСКУ РЕКЛАМИ
+       КАСТОМНИЙ ВІДЕОПЛЕЄР ІЗ ДИНАМІЧНИМ ЗАХИСТОМ ТА ПРОПУСКОМ РЕКЛАМИ
        ============================================================== */
     .modal-video-wrap {
       width: 100%;
@@ -797,9 +797,10 @@
       pointer-events: auto;
     }
     /* 
-      Захисний прозорий екран:
-      Повністю блокує назву, автора, меню, посилання на сторонні сторінки,
-      але має точний виріз у правому нижньому кутку для натискання кнопки «Пропустити» (Skip Ad).
+      ЗАХИСНИЙ ПРОЗОРИЙ ЕКРАН:
+      За замовчуванням закриває 100% площі відео — блокує будь-які кліки та наведення на логотип YouTube.
+      Виріз для кнопки «Пропустити» активується ВИКЛЮЧНО тоді, коли виявлено показ реклами (.ad-showing).
+      Як тільки реклама пропускається або завершується — екран знову стає суцільним!
     */
     .video-shield-overlay {
       position: absolute;
@@ -813,6 +814,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: clip-path 0.15s ease;
+    }
+    .video-shield-overlay.ad-showing {
       clip-path: polygon(
         0% 0%,
         100% 0%,
@@ -1744,9 +1748,11 @@
     let searchTerm = '';
     let sortKey = 'date-desc';
     let selectedMonth = 'all';
-    // Змінні плеєра
+    // Змінні плеєра та детекції реклами
     let activeYtPlayer = null;
     let ytTrackerTimer = null;
+    let adWatchdogTimer = null;
+    let currentActiveVideoId = null;
     let isUserSeeking = false;
     // DOM елементи
     const authGateTop = document.getElementById('authGateTop');
@@ -1893,7 +1899,7 @@
       return `${day}.${month}.${year}`;
     }
     /**
-     * Форматує будь-які дати (включаючи довгі технічні GMT-стрічки з дужками) у стильний та лаконічний український формат
+     * Форматує дати (включаючи рядки GMT із дужками) у лаконічний український формат
      */
     function formatDateToUkrainian(dateStr) {
       if (!dateStr || dateStr === "—" || String(dateStr).trim() === "") return "—";
@@ -1917,8 +1923,8 @@
         let day = parseInt(matchYmd[3], 10);
         return convertToUkr(day, month, year);
       }
-      // 3. Формат англомовного виводу Date із Google Sheets:
-      // Наприклад: "Wed Sep 30 2026 00:00:00 GMT+0300 (за східноєвропейським літнім часом)"
+      // 3. Формат виводу Date із Google Sheets:
+      // "Wed Sep 30 2026 00:00:00 GMT+0300 (за східноєвропейським літнім часом)"
       const engMonthsMap = {
         jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
         jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12
@@ -2238,7 +2244,7 @@
     }
     /**
      * ========================================================================
-     * РОБОТА ІЗ ЗАХИЩЕНИМ ВІДЕОПЛЕЄРОМ
+     * РОБОТА ІЗ ЗАХИЩЕНИМ ВІДЕОПЛЕЄРОМ ТА ДИНАМІЧНИМ БЛОКУВАННЯМ РЕКЛАМИ
      * ========================================================================
      */
     function formatTimeSeconds(sec) {
@@ -2247,7 +2253,55 @@
       const s = Math.floor(sec % 60);
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
+    /**
+     * Точна детекція: чи відтворюється зараз рекламна вставка?
+     */
+    function checkIsAdPlaying() {
+      if (!activeYtPlayer) return false;
+      try {
+        // 1. Метод getAdState плеєра YouTube (1 = показ реклами)
+        if (typeof activeYtPlayer.getAdState === 'function') {
+          const adState = activeYtPlayer.getAdState();
+          if (adState === 1 || adState === true) return true;
+        }
+        // 2. Порівняння video_id поточного ролика з ID нашої лекції
+        if (typeof activeYtPlayer.getVideoData === 'function' && currentActiveVideoId) {
+          const vData = activeYtPlayer.getVideoData();
+          if (vData && vData.video_id && vData.video_id.length >= 6) {
+            if (vData.video_id !== currentActiveVideoId) {
+              return true; // Грає ролик із іншим ID — це реклама!
+            } else {
+              return false; // Грає наша лекція — реклами немає
+            }
+          }
+        }
+        // 3. Порівняння getVideoUrl
+        if (typeof activeYtPlayer.getVideoUrl === 'function' && currentActiveVideoId) {
+          const vUrl = activeYtPlayer.getVideoUrl();
+          if (vUrl && vUrl.includes('v=') && !vUrl.includes(currentActiveVideoId)) {
+            return true;
+          }
+        }
+      } catch (err) {}
+      return false;
+    }
+    /**
+     * Динамічно оновлює стан захисного екрана:
+     * - Якщо реклама: відкриває виріз для кнопки «Пропустити»
+     * - Якщо реклами немає або її пропущено: наглухо блокує всю площу (включно з логотипом YouTube)
+     */
+    function updateAdShieldState() {
+      const shield = document.getElementById('videoShieldOverlay');
+      if (!shield) return;
+      const isAd = checkIsAdPlaying();
+      if (isAd) {
+        shield.classList.add('ad-showing');
+      } else {
+        shield.classList.remove('ad-showing');
+      }
+    }
     function createProtectedPlayer(videoId) {
+      currentActiveVideoId = videoId;
       if (activeYtPlayer) {
         try { activeYtPlayer.destroy(); } catch (e) {}
         activeYtPlayer = null;
@@ -2256,6 +2310,12 @@
         clearInterval(ytTrackerTimer);
         ytTrackerTimer = null;
       }
+      if (adWatchdogTimer) {
+        clearInterval(adWatchdogTimer);
+        adWatchdogTimer = null;
+      }
+      // Запускаємо частий моніторинг для миттєвої реакції на появу/пропуск реклами
+      adWatchdogTimer = setInterval(updateAdShieldState, 120);
       function instantiate() {
         activeYtPlayer = new YT.Player('ytPlayerHost', {
           videoId: videoId,
@@ -2293,12 +2353,14 @@
       }
       updatePlayerTimeLabels(0, dur);
       bindPlayerControlListeners(player);
+      updateAdShieldState();
     }
     function onProtectedPlayerStateChange(e) {
       const state = e.data;
       const playIcon = document.getElementById('cpPlayIcon');
       const centerBadge = document.getElementById('videoCenterBadge');
       const player = activeYtPlayer;
+      updateAdShieldState();
       if (state === YT.PlayerState.PLAYING) {
         if (centerBadge) centerBadge.classList.add('hidden');
         if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
@@ -2322,6 +2384,7 @@
       ytTrackerTimer = setInterval(() => {
         if (!activeYtPlayer || isUserSeeking) return;
         try {
+          updateAdShieldState();
           const cur = activeYtPlayer.getCurrentTime() || 0;
           const dur = activeYtPlayer.getDuration() || 0;
           const frac = activeYtPlayer.getVideoLoadedFraction() || 0;
@@ -2338,7 +2401,7 @@
             progressBuffer.style.width = `${frac * 100}%`;
           }
         } catch (err) {}
-      }, 250);
+      }, 150);
     }
     function stopPlayerTracker() {
       if (ytTrackerTimer) {
@@ -2445,13 +2508,14 @@
     function openModal(itemId) {
       const item = allNewsItems.find(i => i.id === itemId);
       if (!item) return;
+      currentActiveVideoId = item.youtubeId || null;
       let videoSectionHtml = '';
       if (item.youtubeId) {
         videoSectionHtml = `
           <div class="modal-video-wrap" id="modalVideoWrap" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
             <div class="video-viewport">
               <div id="ytPlayerHost"></div>
-              <!-- Захисний екран із вирізом для кнопки «Пропустити» (Skip Ad) -->
+              <!-- Захисний екран: за замовчуванням суцільний, виріз відкривається динамічно ТІЛЬКИ на час реклами -->
               <div class="video-shield-overlay" id="videoShieldOverlay" title="">
                 <div class="video-center-play-badge" id="videoCenterBadge">
                   <i data-lucide="play" style="width: 28px; height: 28px; margin-left: 3px;"></i>
@@ -2505,10 +2569,15 @@
       modalOverlay.classList.remove('active');
       document.body.style.overflow = '';
       stopPlayerTracker();
+      if (adWatchdogTimer) {
+        clearInterval(adWatchdogTimer);
+        adWatchdogTimer = null;
+      }
       if (activeYtPlayer) {
         try { activeYtPlayer.destroy(); } catch (e) {}
         activeYtPlayer = null;
       }
+      currentActiveVideoId = null;
       modalTarget.innerHTML = '';
     }
   </script>
