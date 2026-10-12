@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <meta name="color-scheme" content="light">
-  <title>FAO & КНУ імені Тараса Шевченка — Новини та дослідження</title>
+  <title>FAO & КНУ імені Тараса Шевченка — Відкриті лекції та дослідження</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/960px-Flag_of_Ukraine.svg.png">
   <!-- Захист від витоку реферера -->
@@ -512,7 +512,7 @@
       height: 14px;
       pointer-events: none;
     }
-    /* КАРТКИ НОВИН */
+    /* КАРТКИ НОВИН / ЛЕКЦІЙ */
     .news-feed {
       display: flex;
       flex-direction: column;
@@ -693,7 +693,7 @@
       width: 15px;
       height: 15px;
     }
-    /* МОДАЛЬНЕ ВІКНО ПОВНОГО МАТЕРІАЛУ */
+    /* МОДАЛЬНЕ ВІКНО ПОВНОГО МАТЕРІАЛУ ЛЕКЦІЇ */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -763,7 +763,7 @@
       background-color: #FFFFFF !important;
     }
     /* ==============================================================
-       КАСТОМНИЙ ВІДЕОПЛЕЄР ІЗ ЗАХИСТОМ ВІД ВИТОКУ URL ТА ПЕРЕХОДІВ
+       КАСТОМНИЙ ВІДЕОПЛЕЄР ІЗ ЗАХИСТОМ ТА ПІДТРИМКОЮ ПРОПУСКУ РЕКЛАМИ
        ============================================================== */
     .modal-video-wrap {
       width: 100%;
@@ -785,7 +785,7 @@
       background-color: #000000;
       overflow: hidden;
     }
-    /* Забороняємо будь-які події миші безпосередньо над iframe (блокує ховери, кліки по посиланнях і меню) */
+    /* iframe дозволяє кліки для кнопки пропуску реклами */
     .video-viewport iframe,
     .video-viewport #ytPlayerHost {
       position: absolute;
@@ -794,9 +794,13 @@
       width: 100%;
       height: 100%;
       border: 0;
-      pointer-events: none !important;
+      pointer-events: auto;
     }
-    /* Суцільний прозорий щит-перехоплювач над усім відео */
+    /* 
+      Захисний прозорий екран:
+      Повністю блокує назву, автора, меню, посилання на сторонні сторінки,
+      але має точний виріз у правому нижньому кутку для натискання кнопки «Пропустити» (Skip Ad).
+    */
     .video-shield-overlay {
       position: absolute;
       top: 0;
@@ -809,6 +813,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      clip-path: polygon(
+        0% 0%,
+        100% 0%,
+        100% calc(100% - 95px),
+        calc(100% - 175px) calc(100% - 95px),
+        calc(100% - 175px) 100%,
+        0% 100%
+      );
     }
     .video-center-play-badge {
       width: 66px;
@@ -1121,7 +1133,6 @@
       width: 100%;
       flex-shrink: 0;
     }
-    /* Компактний вигляд підвалу до авторизації для поміщення у висоту екрана */
     body:not(.logged-in) footer {
       margin-top: auto;
       padding: 8px 10px 4px;
@@ -1445,11 +1456,11 @@
           >
           <div class="branding-titles">
             <h1>FAO & КНУ імені Тараса Шевченка</h1>
-            <p class="subtitle">Спільні ініціативи, дослідження та новини партнерства</p>
+            <p class="subtitle">Цикл відкритих лекцій, спільні дослідження та відеоматеріали партнерства</p>
           </div>
         </div>
         <p class="project-description">
-          Співпраця Продовольчої та сільськогосподарської організації ООН (FAO) та Київського національного університету імені Тараса Шевченка спрямована на реалізацію спільних дослідницьких, освітніх та експертних ініціатив у сфері продовольчої безпеки, сталого розвитку агросектору, кліматичної стійкості та відновлення України.
+          Співпраця Продовольчої та сільськогосподарської організації ООН (FAO) та Київського національного університету імені Тараса Шевченка присвячена проведенню циклу відкритих навчальних лекцій, практичних відеокурсів та експертних зустрічей (лекційні матеріали від провідних фахівців замість сухих академічних статей). Тематика охоплює продовольчу безпеку, сталий розвиток агросектору, кліматичну стійкість та відновлення України.
         </p>
       </div>
       <!-- ПРАВА ВЕРХНЯ ЗОНА: ВХІД / ПОШУК / СЕСІЯ -->
@@ -1489,7 +1500,7 @@
         <div id="headerSearchBox" class="header-search" style="display: none;">
           <div class="search-container">
             <i data-lucide="search" class="search-icon"></i>
-            <input type="text" id="mainSearchInput" class="search-input" placeholder="Шукати в новинах або тексті...">
+            <input type="text" id="mainSearchInput" class="search-input" placeholder="Шукати лекцію або тему виступу...">
           </div>
         </div>
         <div id="sessionHeaderBadge" class="session-header-badge" style="display: none;">
@@ -1511,9 +1522,9 @@
       <div class="lock-icon-pill">
         <i data-lucide="lock" style="width: 20px; height: 20px;"></i>
       </div>
-      <h2>Матеріали досліджень закрито</h2>
+      <h2>Матеріали лекцій закрито</h2>
       <p>
-        Новини, аналітика та відеоматеріали партнерства FAO & КНУ захищені шифруванням. Будь ласка, введіть логін та пароль у формі у правому верхньому кутку сторінки.
+        Відеолекції, навчальні курси та презентаційні матеріали партнерства FAO & КНУ захищені шифруванням. Будь ласка, введіть логін та пароль у формі у правому верхньому кутку сторінки.
       </p>
       <div class="lock-tip-box">
         <i data-lucide="arrow-up-right" style="width: 13px; height: 13px;"></i>
@@ -1549,28 +1560,28 @@
     <!-- Завантаження -->
     <div id="loadingState" class="loading-state" style="display: none;">
       <div class="spinner"></div>
-      <p>Отримання захищених матеріалів та відео...</p>
+      <p>Отримання захищених відеолекцій та матеріалів...</p>
     </div>
     <!-- Помилка зв'язку -->
     <div id="errorState" class="error-state" style="display: none;">
       <i data-lucide="alert-triangle" class="error-icon"></i>
       <h3>Збій отримання даних</h3>
-      <p id="errorStateText">Не вдалося завантажити матеріали через Apps Script. Перевірте з'єднання або оновіть сторінку.</p>
+      <p id="errorStateText">Не вдалося завантажити лекції через Apps Script. Перевірте з'єднання або оновіть сторінку.</p>
     </div>
-    <!-- Вертикальна стрічка новин -->
+    <!-- Вертикальна стрічка лекцій -->
     <div class="news-feed" id="newsGrid" style="display: none;"></div>
   </main>
   <!-- Плаваюча панель швидкого пошуку і повернення нагору -->
   <div class="floating-controls-panel" id="floatingControls">
     <div class="floating-search-box">
       <i data-lucide="search" class="floating-search-icon"></i>
-      <input type="text" id="floatingSearchInput" class="floating-search-input" placeholder="Пошук новини...">
+      <input type="text" id="floatingSearchInput" class="floating-search-input" placeholder="Пошук лекції...">
     </div>
     <button class="back-to-top" id="backToTopBtn" title="Вгору">
       <i data-lucide="arrow-up"></i>
     </button>
   </div>
-  <!-- Модальне вікно для читання повного матеріалу -->
+  <!-- Модальне вікно для перегляду повної лекції -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-card">
       <button class="modal-close-btn" id="modalCloseBtn" title="Закрити">
@@ -1585,7 +1596,7 @@
       <div class="footer-contact-block">
         <h3 class="contact-title">FAO & КНУ імені Тараса Шевченка</h3>
         <p class="footer-funding-text">
-          Партнерська ініціатива <a href="https://www.fao.org/home/en/" target="_blank" rel="noopener noreferrer" class="contact-inline-link">Продовольчої та сільськогосподарської організації ООН (FAO)</a> та <a href="https://knu.ua/" target="_blank" rel="noopener noreferrer" class="contact-inline-link">Київського національного університету імені Тараса Шевченка</a> для координації науково-дослідних проєктів, освітніх програм, експертної аналітики та сталого розвитку.
+          Партнерська ініціатива <a href="https://www.fao.org/home/en/" target="_blank" rel="noopener noreferrer" class="contact-inline-link">Продовольчої та сільськогосподарської організації ООН (FAO)</a> та <a href="https://knu.ua/" target="_blank" rel="noopener noreferrer" class="contact-inline-link">Київського національного університету імені Тараса Шевченка</a> для проведення відкритих експертних лекцій, координації науково-освітніх проєктів, аналітики та сталого розвитку.
         </p>
         <p class="contact-question">Маєте питання чи пропозиції? Напишіть нам!</p>
         <a href="mailto:grant.ndch@knu.ua" class="contact-email">grant.ndch@knu.ua</a>
@@ -1704,13 +1715,13 @@
       return plainBytes.map(b => String.fromCharCode(b)).join('');
     }
     const _AS_VAULT = [
-  "867f13b8eef5681f9e0b0d4a401865a8845e3810fda927604dda5781",
-  "37989f168cf24017aa310a051d1d421eadb4a555b860f2db0a06ba5b",
-  "f89472dcb8782520805bce541b491fd501c68cb80dbd69eebbb786ce",
-  "4489389a44f59d32b4528582ff13b603922b4c610ec695acec1f5318"
-];
-const _AS_INDEX = [1, 3, 0, 2];
-const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).join(''));
+      "867f13b8eef5681f9e0b0d4a401865a8845e3810fda927604dda5781",
+      "37989f168cf24017aa310a051d1d421eadb4a555b860f2db0a06ba5b",
+      "f89472dcb8782520805bce541b491fd501c68cb80dbd69eebbb786ce",
+      "4489389a44f59d32b4528582ff13b603922b4c610ec695acec1f5318"
+    ];
+    const _AS_INDEX = [1, 3, 0, 2];
+    const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).join(''));
     function _k(hex) {
       let str = '';
       for (let i = 0; i < hex.length; i += 2) {
@@ -1864,7 +1875,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
           dateObj: dateObj,
           monthKey: monthKey,
           monthLabel: monthLabel,
-          title: item.title || "Матеріал проєкту",
+          title: item.title || "Відеолекція проєкту",
           lead: item.lead || "",
           fullText: item.fullText || "",
           youtubeId: item.youtubeId || ""
@@ -1881,9 +1892,13 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
       }
       return `${day}.${month}.${year}`;
     }
+    /**
+     * Форматує будь-які дати (включаючи довгі технічні GMT-стрічки з дужками) у стильний та лаконічний український формат
+     */
     function formatDateToUkrainian(dateStr) {
-      if (!dateStr || dateStr === "—" || dateStr.trim() === "") return "—";
+      if (!dateStr || dateStr === "—" || String(dateStr).trim() === "") return "—";
       let cleanStr = String(dateStr).trim();
+      // 1. Формат ДД.ММ.РРРР або ДД-ММ-РРРР
       const dmyRegex = /^(\d{1,2})[./-](\d{1,2})[./-](\d{4}|\d{2})$/;
       const matchDmy = cleanStr.match(dmyRegex);
       if (matchDmy) {
@@ -1892,6 +1907,37 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
         let year = parseInt(matchDmy[3], 10);
         if (year < 100) year += 2000;
         return convertToUkr(day, month, year);
+      }
+      // 2. Формат РРРР-ММ-ДД (ISO)
+      const ymdRegex = /^(\d{4})[./-](\d{1,2})[./-](\d{1,2})/;
+      const matchYmd = cleanStr.match(ymdRegex);
+      if (matchYmd) {
+        let year = parseInt(matchYmd[1], 10);
+        let month = parseInt(matchYmd[2], 10);
+        let day = parseInt(matchYmd[3], 10);
+        return convertToUkr(day, month, year);
+      }
+      // 3. Формат англомовного виводу Date із Google Sheets:
+      // Наприклад: "Wed Sep 30 2026 00:00:00 GMT+0300 (за східноєвропейським літнім часом)"
+      const engMonthsMap = {
+        jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6,
+        jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12
+      };
+      const engDateMatch = cleanStr.match(/(?:[A-Za-z]{3},?\s+)?([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/i);
+      if (engDateMatch) {
+        const mKey = engDateMatch[1].toLowerCase();
+        if (engMonthsMap[mKey]) {
+          const month = engMonthsMap[mKey];
+          const day = parseInt(engDateMatch[2], 10);
+          const year = parseInt(engDateMatch[3], 10);
+          return convertToUkr(day, month, year);
+        }
+      }
+      // 4. Очищення від таймзон у дужках і спроба нативного парсингу Date
+      const sanitized = cleanStr.replace(/\(.*?\)/g, '').trim();
+      const parsed = new Date(sanitized);
+      if (!isNaN(parsed.getTime()) && parsed.getFullYear() > 1990) {
+        return convertToUkr(parsed.getDate(), parsed.getMonth() + 1, parsed.getFullYear());
       }
       return dateStr;
     }
@@ -1928,7 +1974,16 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
         const year = parseInt(partsDot[2], 10);
         return new Date(year, month, day);
       }
-      const parsed = new Date(cleanStr);
+      const engMonthsMap = {
+        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+        jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11
+      };
+      const engMatch = cleanStr.match(/(?:[A-Za-z]{3},?\s+)?([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/i);
+      if (engMatch && engMonthsMap[engMatch[1].toLowerCase()] !== undefined) {
+        return new Date(parseInt(engMatch[3], 10), engMonthsMap[engMatch[1].toLowerCase()], parseInt(engMatch[2], 10));
+      }
+      const sanitized = cleanStr.replace(/\(.*?\)/g, '').trim();
+      const parsed = new Date(sanitized);
       return isNaN(parsed.getTime()) ? new Date(0) : parsed;
     }
     function updateMonthDropdown(items) {
@@ -1997,7 +2052,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
           html += `<div class="article-list-item">${processInlineFormatting(trimmed)}</div>`;
           return;
         }
-        const isAuthorByline = /^підготував|^підготувала|^автор/i.test(trimmed) && trimmed.length < 130;
+        const isAuthorByline = /^підготував|^підготувала|^автор|^лектор|^доповідач/i.test(trimmed) && trimmed.length < 130;
         if (isAuthorByline) {
           let bylineFormatted = processInlineFormatting(trimmed);
           bylineFormatted = bylineFormatted.replace(/<\/?(strong|b|em|i)>/gi, '');
@@ -2119,8 +2174,8 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
         newsGrid.innerHTML = `
           <div class="no-results" style="width: 100%;">
             <i data-lucide="search-slash" style="width: 44px; height: 44px; opacity: 0.5; margin-bottom: 12px; color: #E2E8F0;"></i>
-            <h3 style="color: #0B1F3A;">Новин не знайдено</h3>
-            <p style="color: #44546A;">Спробуйте обрати інший місяць або змінити пошуковий запит.</p>
+            <h3 style="color: #0B1F3A;">Лекцій не знайдено</h3>
+            <p style="color: #44546A;">Спробуйте обрати інший місяць або змінити пошуковий запит лекції.</p>
           </div>
         `;
         lucide.createIcons();
@@ -2148,7 +2203,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
                   onerror="this.src='${fallbackThumbUrl}'"
                 >
                 <div class="media-video-overlay">
-                  <div class="media-play-pill" title="Дивитися">
+                  <div class="media-play-pill" title="Дивитися лекцію">
                     <i data-lucide="play" style="width: 22px; height: 22px; margin-left: 2px;"></i>
                   </div>
                 </div>
@@ -2163,7 +2218,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
             <div class="news-card-body-wrap">
               <div>
                 <div class="news-card-meta-top">
-                  <span class="news-card-meta-text">№ ${item.id} • ${item.date}</span>
+                  <span class="news-card-meta-text">Лекція № ${item.id} • ${item.date}</span>
                 </div>
                 <h2 class="news-card-title">${escapeHtml(item.title)}</h2>
                 <div class="news-card-divider"></div>
@@ -2171,7 +2226,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
               </div>
               <div class="news-card-footer">
                 <span class="read-more-btn">
-                  <span>Читати та дивитися</span>
+                  <span>Дивитися лекцію</span>
                   <i data-lucide="arrow-right"></i>
                 </span>
               </div>
@@ -2396,7 +2451,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
           <div class="modal-video-wrap" id="modalVideoWrap" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
             <div class="video-viewport">
               <div id="ytPlayerHost"></div>
-              <!-- Захисний шар: блокує кліки на назву, автора, Share, YouTube логотип та відкриття меню -->
+              <!-- Захисний екран із вирізом для кнопки «Пропустити» (Skip Ad) -->
               <div class="video-shield-overlay" id="videoShieldOverlay" title="">
                 <div class="video-center-play-badge" id="videoCenterBadge">
                   <i data-lucide="play" style="width: 28px; height: 28px; margin-left: 3px;"></i>
@@ -2432,7 +2487,7 @@ const SCRIPT_URL = decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).joi
         ${videoSectionHtml}
         <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 14px;">
           <div class="news-card-meta-text">
-            <span>№ ${item.id} • ${item.date}</span>
+            <span>Лекція № ${item.id} • ${item.date}</span>
           </div>
         </div>
         <h1 class="modal-title">${escapeHtml(item.title)}</h1>
