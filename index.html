@@ -691,7 +691,7 @@
             <!-- Слот 1: Логін -->
             <div class="auth-field-slot">
               <i data-lucide="user" class="auth-top-icon"></i>
-              <input type="text" id="authLogin" class="auth-top-input" placeholder="Логін (напр. Anton Nanavov)" autocomplete="username" required>
+              <input type="text" id="authLogin" class="auth-top-input" placeholder="Логін" autocomplete="username" required>
             </div>
             <!-- Слот 2: Пароль -->
             <div class="auth-field-slot">
@@ -1003,7 +1003,7 @@
         authSubmitBtn.innerHTML = `<span>Увійти</span><i data-lucide="arrow-right" style="width: 13px; height: 13px;"></i>`;
         authBadgeTitle.innerText = "Вхід до системи";
         authBadgeIcon.setAttribute('data-lucide', 'shield-check');
-        authLogin.placeholder = "Логін (напр. Anton Nanavov)";
+        authLogin.placeholder = "Логін";
         authPass.placeholder = "Пароль";
       }
       lucide.createIcons();
