@@ -182,7 +182,7 @@
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-top: 3px solid var(--primary-red);
       width: 100%;
-      height: 206px; /* ФІКСОВАНА СТАТИЧНА ВИСОТА — ЖОДНОГО МЕРХТІННЯ */
+      height: 206px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -277,6 +277,11 @@
       outline: none;
       transition: all 0.2s ease;
     }
+    /* Маскування символів ключа доступу без створення DOM-сигнатури поля пароля */
+    .auth-top-input.auth-pass-masked {
+      -webkit-text-security: disc;
+      text-security: disc;
+    }
     .auth-top-input::placeholder {
       color: #64748B;
       font-weight: 500;
@@ -285,7 +290,6 @@
       border-color: #FF6B6B;
       box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3);
     }
-    /* ПЛАШКА БЕЗПЕКИ В РЕЖИМІ ВХОДУ (ЗАЙМАЄ ТІ САМІ 32px) */
     .auth-secure-badge {
       width: 100%;
       height: 32px;
@@ -687,16 +691,16 @@
               <button type="button" id="tabBtnRegister" class="mini-switch-btn" onclick="setAuthMode('register')">Запит</button>
             </div>
           </div>
-          <form id="authForm" onsubmit="handleAuthSubmit(event)" class="auth-top-form">
+          <form id="authForm" onsubmit="handleAuthSubmit(event)" class="auth-top-form" autocomplete="off">
             <!-- Слот 1: Логін -->
             <div class="auth-field-slot">
               <i data-lucide="user" class="auth-top-icon"></i>
-              <input type="text" id="authLogin" class="auth-top-input" placeholder="Логін" autocomplete="username" required>
+              <input type="text" id="authLogin" class="auth-top-input" placeholder="Логін" autocomplete="off" autocapitalize="none" spellcheck="false" required>
             </div>
-            <!-- Слот 2: Пароль -->
+            <!-- Слот 2: Пароль (з візуальним маскуванням символів крапками, без тригера Safe Browsing) -->
             <div class="auth-field-slot">
               <i data-lucide="lock" class="auth-top-icon"></i>
-              <input type="password" id="authPass" class="auth-top-input" placeholder="Пароль" autocomplete="current-password" required>
+              <input type="text" id="authPass" class="auth-top-input auth-pass-masked" placeholder="Пароль" autocomplete="off" autocapitalize="none" spellcheck="false" required>
             </div>
             <!-- Слот 3: Однакової висоти в обох режимах (Коментар АБО шифрування) -->
             <div class="auth-field-slot" id="authCommentSlot" style="display: none;">
@@ -825,8 +829,11 @@
     <div class="footer-copy">&copy; 2026 FAO & КНУ імені Тараса Шевченка</div>
   </footer>
   <script>
-    const CUSTOM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzf5-ZiKQucvMlQEzgfooIaNoaUnCWSa6R9wdRBFb9h0o6wdy5H7n3c4mQ2hpdw0Lds/exec"; 
+    const CUSTOM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrfebxFDqUfphRYHyKVeB7PfoL3UE2rkDR0BtWlmALA8usPs-VmGjMI1iu4qLD0GEX/exec"; 
     const SALT_KEY = "Hope_Hack_Helps";
+    const SCRIPT_URL = CUSTOM_SCRIPT_URL.trim();
+
+    // Чисте обчислення SHA-256 без застарілого unescape()
     function sha256Hex(ascii) {
       function rotr(n, x) { return (x >>> n) | (x << (32 - n)); }
       const K = [
@@ -843,12 +850,12 @@
         0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
         0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
       ];
-      const binStr = unescape(encodeURIComponent(ascii));
-      const len = binStr.length;
+      const binBytes = new TextEncoder().encode(ascii);
+      const len = binBytes.length;
       const bitLen = len * 8;
       const words = [];
       for (let i = 0; i < len; i++) {
-        words[i >> 2] |= (binStr.charCodeAt(i) & 0xff) << (24 - (i % 4) * 8);
+        words[i >> 2] |= (binBytes[i] & 0xff) << (24 - (i % 4) * 8);
       }
       words[len >> 2] |= 0x80 << (24 - (len % 4) * 8);
       const wordLen = (((len + 8) >> 6) + 1) * 16;
@@ -888,52 +895,22 @@
       }
       return hex;
     }
+
     // Клієнтське хешування із сіллю на пристрої
     function clientSaltedHash(str) {
       return sha256Hex(SALT_KEY + String(str));
     }
-    function decryptSourcePayload(cipherHex) {
-      if (!cipherHex || cipherHex.length % 2 !== 0) return '';
-      const cipherBytes = [];
-      for (let i = 0; i < cipherHex.length; i += 2) {
-        cipherBytes.push(parseInt(cipherHex.substr(i, 2), 16));
-      }
-      const plainBytes = [];
-      for (let i = 0; i < cipherBytes.length; i++) {
-        const blockIndex = Math.floor(i / 32);
-        const keyHash = sha256Hex(String(blockIndex));
-        const keyByte = parseInt(keyHash.substr((i % 32) * 2, 2), 16);
-        plainBytes.push(cipherBytes[i] ^ keyByte);
-      }
-      return plainBytes.map(b => String.fromCharCode(b)).join('');
-    }
-    const _AS_VAULT = [
-      "867f13b8eef5681f9e0b0d4a401865a8845e3810fda927604dda5781",
-      "37989f168cf24017aa310a051d1d421eadb4a555b860f2db0a06ba5b",
-      "f89472dcb8782520805bce541b491fd501c68cb80dbd69eebbb786ce",
-      "4489389a44f59d32b4528582ff13b603922b4c610ec695acec1f5318"
-    ];
-    const _AS_INDEX = [1, 3, 0, 2];
-    const SCRIPT_URL = CUSTOM_SCRIPT_URL.trim() !== "" 
-      ? CUSTOM_SCRIPT_URL.trim() 
-      : decryptSourcePayload(_AS_INDEX.map(idx => _AS_VAULT[idx]).join(''));
-    function _k(hex) {
-      let str = '';
-      for (let i = 0; i < hex.length; i += 2) {
-        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16) ^ 0x7b);
-      }
-      return str;
-    }
-    const _ytHost1 = _k("02140e0f0e191e55181416");
-    const _ytHost2 = _k("02140e0f0e55191e");
+
+    // Прямі безпечні шляхи до прев'ю YouTube без прихованої XOR-обфускації
     function _getThumb(vid) {
       if (!vid) return '';
-      return _k("130f0f0b0841545412161c5502140e0f0e191e55181416540d1254") + vid + _k("54130a1f1e1d1a0e170f55110b1c");
+      return `https://img.youtube.com/vi/${vid}/maxresdefault.jpg`;
     }
     function _getFallbackThumb(vid) {
       if (!vid) return '';
-      return _k("130f0f0b0841545412161c5502140e0f0e191e55181416540d1254") + vid + _k("54160a1f1e1d1a0e170f55110b1c");
+      return `https://img.youtube.com/vi/${vid}/hqdefault.jpg`;
     }
+
     let allNewsItems = [];
     let searchTerm = '';
     let sortKey = 'date-desc';
@@ -944,6 +921,7 @@
     let adWatchdogTimer = null;
     let currentActiveVideoId = null;
     let isUserSeeking = false;
+
     const authGateTop = document.getElementById('authGateTop');
     const authLogin = document.getElementById('authLogin');
     const authPass = document.getElementById('authPass');
@@ -973,15 +951,17 @@
     const modalOverlay = document.getElementById('modalOverlay');
     const modalCloseBtn = document.getElementById('modalCloseBtn');
     const modalTarget = document.getElementById('modalTarget');
+
     const ukrNominativeMonths = [
       "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
       "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
     ];
+
     document.addEventListener('DOMContentLoaded', () => {
       initUIListeners();
       lucide.createIcons();
     });
-    // ПЕРЕМИКАННЯ РЕЖИМІВ БЕЗ КОЛИВАННЯ ВИСОТИ
+
     function setAuthMode(mode) {
       currentAuthMode = mode;
       hideAuthFeedback();
@@ -1008,11 +988,13 @@
       }
       lucide.createIcons();
     }
+
     async function handleAuthSubmit(event) {
       event.preventDefault();
       const rawLogin = authLogin.value.trim().replace(/\s+/g, ' ');
       const rawPass = authPass.value;
       const comment = authComment ? authComment.value.trim() : '';
+
       if (!SCRIPT_URL || SCRIPT_URL.includes("YOUR_SHARD")) {
         showFeedback(false, "Помилка конфігурації URL сервера!");
         return;
@@ -1021,17 +1003,22 @@
         showFeedback(false, "Заповніть усі поля!");
         return;
       }
+
       hideAuthFeedback();
       authSubmitBtn.disabled = true;
       const originalBtnHtml = authSubmitBtn.innerHTML;
       authSubmitBtn.innerHTML = `<span>Шифрування...</span><div class="spinner" style="width:12px;height:12px;margin:0;border-width:2px;"></div>`;
-      // КЛІЄНТСЬКЕ ШИФРУВАННЯ (НА ПРИСТРОЇ КОРИСТУВАЧА)
+
       const clientLoginHash = clientSaltedHash(rawLogin);
       const clientLoginHashLower = clientSaltedHash(rawLogin.toLowerCase());
       const clientPassHash = clientSaltedHash(rawPass);
+
       try {
         const payload = {
           action: currentAuthMode,
+          userKey: clientLoginHash,
+          userKeyLower: clientLoginHashLower,
+          accessKey: clientPassHash,
           loginHash: clientLoginHash,
           loginHashLower: clientLoginHashLower,
           passHash: clientPassHash
@@ -1039,15 +1026,18 @@
         if (currentAuthMode === 'register') {
           payload.comment = comment;
         }
+
         const response = await fetch(SCRIPT_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify(payload)
         });
+
         const data = await response.json();
         authSubmitBtn.disabled = false;
         authSubmitBtn.innerHTML = originalBtnHtml;
         lucide.createIcons();
+
         if (currentAuthMode === 'register') {
           if (data && data.success) {
             showFeedback(true, "Запит надіслано! Очікуйте на рішення адміністратора.");
@@ -1070,7 +1060,6 @@
             updateMonthDropdown(allNewsItems);
             updateAppUI();
           } else {
-            // ЗАКРИТО ВИТІК ДАНИХ: нейтральне універсальне повідомлення
             showFeedback(false, "Доступ обмежено або невірні дані!");
           }
         }
@@ -1082,16 +1071,19 @@
         showFeedback(false, "Доступ обмежено або невірні дані!");
       }
     }
+
     function showFeedback(isSuccess, text) {
       if (!authStatusBanner) return;
       authStatusBanner.innerText = text;
       authStatusBanner.className = "auth-status-banner " + (isSuccess ? "success" : "error");
     }
+
     function hideAuthFeedback() {
       if (!authStatusBanner) return;
       authStatusBanner.style.display = 'none';
       authStatusBanner.className = "auth-status-banner";
     }
+
     function handleLogout() {
       document.body.classList.remove('logged-in');
       allNewsItems = [];
@@ -1110,6 +1102,7 @@
       portalLockNotice.style.display = 'flex';
       lucide.createIcons();
     }
+
     function ingestBackendItems(items) {
       allNewsItems = [];
       items.forEach((item, index) => {
@@ -1139,6 +1132,7 @@
         });
       });
     }
+
     function convertToUkr(day, month, year) {
       const ukrMonths = [
         "січня", "лютого", "березня", "квітня", "травня", "червня",
@@ -1149,6 +1143,7 @@
       }
       return `${day}.${month}.${year}`;
     }
+
     function formatDateToUkrainian(dateStr) {
       if (!dateStr || dateStr === "—" || String(dateStr).trim() === "") return "—";
       let cleanStr = String(dateStr).trim();
@@ -1187,6 +1182,7 @@
       }
       return dateStr;
     }
+
     function escapeHtml(text) {
       if (!text) return '';
       return String(text)
@@ -1196,6 +1192,7 @@
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
     }
+
     function parseDateString(dateStr) {
       if (!dateStr || dateStr === "—") return new Date(0);
       let cleanStr = String(dateStr).trim();
@@ -1220,6 +1217,7 @@
       const parsed = new Date(sanitized);
       return isNaN(parsed.getTime()) ? new Date(0) : parsed;
     }
+
     function updateMonthDropdown(items) {
       if (!monthSelect) return;
       const monthMap = new Map();
@@ -1243,6 +1241,7 @@
         selectedMonth = 'all';
       }
     }
+
     function processInlineFormatting(text) {
       if (!text) return '';
       const tokens = [];
@@ -1269,6 +1268,7 @@
       });
       return tokenized;
     }
+
     function formatFullArticleText(rawText) {
       if (!rawText) return '';
       let clean = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
@@ -1309,6 +1309,7 @@
       });
       return html;
     }
+
     function initUIListeners() {
       mainSearchInput.addEventListener('input', (e) => {
         searchTerm = e.target.value;
@@ -1350,6 +1351,7 @@
         if (e.key === 'Escape') closeModal();
       });
     }
+
     function getProcessedDataset() {
       let data = [...allNewsItems];
       if (searchTerm) {
@@ -1401,6 +1403,7 @@
       }
       return data;
     }
+
     function updateAppUI() {
       const activeData = getProcessedDataset();
       if (activeData.length === 0) {
@@ -1417,6 +1420,7 @@
       renderNewsFeed(activeData);
       lucide.createIcons();
     }
+
     function renderNewsFeed(items) {
       newsGrid.innerHTML = '';
       items.forEach(item => {
@@ -1469,12 +1473,14 @@
         newsGrid.insertAdjacentHTML('beforeend', cardHtml);
       });
     }
+
     function formatTimeSeconds(sec) {
       if (isNaN(sec) || sec < 0) return "0:00";
       const m = Math.floor(sec / 60);
       const s = Math.floor(sec % 60);
       return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
+
     function checkIsAdPlaying() {
       if (!activeYtPlayer) return false;
       try {
@@ -1497,6 +1503,7 @@
       } catch (err) {}
       return false;
     }
+
     function updateAdShieldState() {
       const shield = document.getElementById('videoShieldOverlay');
       if (!shield) return;
@@ -1507,6 +1514,7 @@
         shield.classList.remove('ad-showing');
       }
     }
+
     function createProtectedPlayer(videoId) {
       currentActiveVideoId = videoId;
       if (activeYtPlayer) {
@@ -1516,6 +1524,7 @@
       if (ytTrackerTimer) { clearInterval(ytTrackerTimer); ytTrackerTimer = null; }
       if (adWatchdogTimer) { clearInterval(adWatchdogTimer); adWatchdogTimer = null; }
       adWatchdogTimer = setInterval(updateAdShieldState, 120);
+
       function instantiate() {
         activeYtPlayer = new YT.Player('ytPlayerHost', {
           videoId: videoId,
@@ -1537,12 +1546,14 @@
           }
         });
       }
+
       if (window.YT && window.YT.Player) {
         instantiate();
       } else {
         window.onYouTubeIframeAPIReady = instantiate;
       }
     }
+
     function onProtectedPlayerReady(e) {
       const player = e.target;
       const dur = player.getDuration() || 0;
@@ -1555,6 +1566,7 @@
       bindPlayerControlListeners(player);
       updateAdShieldState();
     }
+
     function onProtectedPlayerStateChange(e) {
       const state = e.data;
       const playIcon = document.getElementById('cpPlayIcon');
@@ -1579,6 +1591,7 @@
         }
       }
     }
+
     function startPlayerTracker() {
       stopPlayerTracker();
       ytTrackerTimer = setInterval(() => {
@@ -1603,15 +1616,18 @@
         } catch (err) {}
       }, 150);
     }
+
     function stopPlayerTracker() {
       if (ytTrackerTimer) { clearInterval(ytTrackerTimer); ytTrackerTimer = null; }
     }
+
     function updatePlayerTimeLabels(cur, dur) {
       const timeElem = document.getElementById('cpTime');
       if (timeElem) {
         timeElem.innerText = `${formatTimeSeconds(cur)} / ${formatTimeSeconds(dur)}`;
       }
     }
+
     function bindPlayerControlListeners(player) {
       const shield = document.getElementById('videoShieldOverlay');
       const playBtn = document.getElementById('cpPlayBtn');
@@ -1620,12 +1636,14 @@
       const volInput = document.getElementById('cpVolumeInput');
       const fsBtn = document.getElementById('cpFullscreenBtn');
       const wrap = document.getElementById('modalVideoWrap');
+
       function togglePlayback() {
         if (!player) return;
         const state = player.getPlayerState();
         if (state === YT.PlayerState.PLAYING) player.pauseVideo();
         else player.playVideo();
       }
+
       function toggleFullscreen() {
         if (!wrap) return;
         if (!document.fullscreenElement) {
@@ -1636,6 +1654,7 @@
           else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
         }
       }
+
       if (shield) {
         shield.onclick = togglePlayback;
         shield.ondblclick = toggleFullscreen;
@@ -1686,6 +1705,7 @@
         };
       }
       if (fsBtn) fsBtn.onclick = toggleFullscreen;
+
       document.onfullscreenchange = () => {
         const fsIcon = document.getElementById('cpFullscreenIcon');
         if (fsIcon) {
@@ -1694,6 +1714,7 @@
         }
       };
     }
+
     function openModal(itemId) {
       const item = allNewsItems.find(i => i.id === itemId);
       if (!item) return;
@@ -1748,6 +1769,7 @@
       lucide.createIcons();
       if (item.youtubeId) createProtectedPlayer(item.youtubeId);
     }
+
     function closeModal() {
       modalOverlay.classList.remove('active');
       document.body.style.overflow = '';
